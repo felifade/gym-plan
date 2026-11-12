@@ -1,0 +1,18 @@
+{
+  "name": "Mi GYM - Plan de Entrenamiento",
+  "short_name": "Mi GYM",
+  "description": "Plan de entrenamiento modular 4-5 días, historial semanal y cronómetro offline.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#0b1120",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "img/espalda_brazos.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

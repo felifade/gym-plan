@@ -6,497 +6,672 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Mi GYM">
-  <title>Plan de Entrenamiento GYM - Felipe</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./img/espalda_brazos.png">
+  <title>Mi GYM - Plan de Entrenamiento Offline</title>
   <style>
+    /* CSS 100% Autocontenido (Cero dependencias externas para funcionar sin internet) */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b1120;
+      --card: #111827;
+      --card-inner: #0f172a;
+      --border: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --sky: #38bdf8;
+      --emerald: #22c55e;
+      --amber: #f59e0b;
+      --rose: #fb7185;
+      --purple: #a855f7;
+    }
     body {
-      background-color: #0b1120;
-      color: #f8fafc;
+      background-color: var(--bg);
+      color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      padding: 14px;
+      padding-bottom: 80px;
       -webkit-tap-highlight-color: transparent;
     }
-    .active-tab {
-      background-color: #38bdf8 !important;
-      color: #0f172a !important;
+    .container { max-width: 1024px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .card {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .badge {
+      font-size: 11px;
       font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      border: 1px solid transparent;
     }
-    input[type="checkbox"]:checked {
-      accent-color: #38bdf8;
+    .badge-emerald { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.3); }
+    .badge-sky { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+    .badge-offline { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
+    h1 { font-size: 24px; font-weight: 900; letter-spacing: -0.02em; color: #fff; }
+    .subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* Temporizador */
+    .timer-box {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
     }
+    .timer-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; font-weight: 800; }
+    .timer-display { font-size: 26px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 900; color: var(--sky); min-width: 78px; }
+    .timer-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    button {
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: transform 0.1s, background-color 0.15s;
+    }
+    button:active { transform: scale(0.95); }
+    .btn-sec {
+      background: #1e293b;
+      color: #cbd5e1;
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .btn-sec:hover { background: #334155; }
+    .btn-primary {
+      background: var(--sky);
+      color: #0f172a;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .btn-primary:hover { background: #7dd3fc; }
+
+    /* Historial Semana 1 */
+    .section-title { font-size: 16px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+    .day-box {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .day-done { border-color: rgba(34, 197, 94, 0.45); background: rgba(34, 197, 94, 0.05); }
+    .day-today { border-color: rgba(56, 189, 248, 0.7); background: rgba(56, 189, 248, 0.1); box-shadow: 0 0 15px rgba(56, 189, 248, 0.15); }
+    .day-name { font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .day-focus { font-size: 14px; font-weight: 700; color: #fff; }
+    .day-desc { font-size: 11px; color: var(--muted); }
+
+    /* Tabs */
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .day-tab {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 9px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .day-tab.active-tab {
+      background: var(--sky);
+      color: #0f172a;
+      border-color: var(--sky);
+      font-weight: 800;
+    }
+
+    /* Banner Imagen */
+    .hero-banner {
+      width: 100%;
+      height: 170px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      background: #0f172a;
+    }
+    .hero-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(11, 17, 32, 0.95) 10%, rgba(11, 17, 32, 0.2) 80%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 16px;
+    }
+    .hero-title { font-size: 18px; font-weight: 800; color: #fff; }
+    .hero-sub { font-size: 12px; color: #cbd5e1; }
+
+    /* Tabla */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 600px; }
+    th {
+      padding: 10px 12px;
+      color: var(--muted);
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.7);
+      font-size: 12px;
+    }
+    td { padding: 12px; border-bottom: 1px solid rgba(30, 41, 59, 0.7); vertical-align: middle; }
+    .ex-name { font-weight: 700; color: #fff; }
+    .ex-muscle { color: var(--muted); font-size: 12px; }
+    .ex-sets { font-family: ui-monospace, monospace; font-weight: 800; color: var(--sky); text-align: center; white-space: nowrap; }
+    .ex-rest { font-family: ui-monospace, monospace; text-align: center; color: #cbd5e1; }
+    .ex-note { color: #cbd5e1; font-size: 12px; line-height: 1.4; }
+    .weight-input {
+      width: 68px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 12px;
+      text-align: center;
+      font-family: ui-monospace, monospace;
+    }
+    .weight-input:focus { outline: none; border-color: var(--sky); }
+    input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--sky); }
+    .hidden { display: none; }
+
+    /* Bitácora interactiva */
+    .log-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .log-input {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      flex: 1;
+      min-width: 160px;
+    }
+    .log-list { display: flex; flex-direction: column; gap: 8px; }
+    .log-item {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    /* Info Cards */
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+    .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 12px; color: #cbd5e1; }
+    .info-card h4 { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
   </style>
 </head>
-<body class="p-3 sm:p-6 antialiased pb-20">
-  <div class="max-w-5xl mx-auto space-y-6">
+<body>
+  <div class="container">
 
-    <!-- Header Principal -->
-    <header class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <!-- Header -->
+    <header class="card header">
       <div>
-        <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Fase 1: Adaptación Anatómica</span>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-500/20 text-sky-400 border border-sky-500/30">4 a 5 Días</span>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">iPad / iPhone Ready</span>
+        <div class="badges">
+          <span class="badge badge-emerald">Semana 1: Adaptación</span>
+          <span class="badge badge-sky">4 a 5 Días</span>
+          <span class="badge badge-offline" id="offlineStatus">⚡ Modo 100% Offline Listo</span>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
-          <span>🏋️‍♂️</span> Plan de Entrenamiento GYM
-        </h1>
-        <p class="text-sm text-slate-400 mt-1">Estructura modular para entrenar con Laura o Yedra | Enfoque: Fuerza Base y Cero Lesiones</p>
+        <h1>🏋️‍♂️ Mi Plan de Entrenamiento</h1>
+        <p class="subtitle">Control de sesiones con Laura y Yedra • Guarda tus pesos automáticamente sin internet</p>
       </div>
 
-      <!-- Temporizador de Descanso Rápido -->
-      <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex items-center gap-3.5 w-full md:w-auto justify-between shadow-inner">
-        <div class="text-left">
-          <div class="text-[10px] uppercase tracking-wider text-slate-500 font-extrabold">Temporizador</div>
-          <div id="timerDisplay" class="text-2xl font-mono font-black text-sky-400">01:30</div>
+      <div class="timer-box">
+        <div>
+          <div class="timer-label">Descanso</div>
+          <div id="timerDisplay" class="timer-display">01:00</div>
         </div>
-        <div class="flex gap-1.5">
-          <button onclick="setTimer(60)" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 active:scale-95 transition-transform">60s</button>
-          <button onclick="setTimer(90)" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 active:scale-95 transition-transform">90s</button>
-          <button onclick="setTimer(120)" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 active:scale-95 transition-transform">120s</button>
-          <button id="startTimerBtn" onclick="toggleTimer()" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 transition-colors shadow-md active:scale-95">▶ Iniciar</button>
+        <div class="timer-btns">
+          <button onclick="setTimer(60)" class="btn-sec">60s</button>
+          <button onclick="setTimer(90)" class="btn-sec">90s</button>
+          <button onclick="setTimer(120)" class="btn-sec">120s</button>
+          <button id="startTimerBtn" onclick="toggleTimer()" class="btn-primary">▶ Iniciar</button>
         </div>
       </div>
     </header>
 
-    <!-- Selector de Esquema Semanal -->
-    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base font-bold text-white flex items-center gap-2">
-          <span>📅</span> Distribución Semanal
-        </h2>
-        <span class="text-xs text-slate-400">Adaptado a tus días de inicio</span>
+    <!-- Historial Real de la Semana 1 -->
+    <section class="card">
+      <div class="section-title">
+        <span>📊</span> Historial de esta Semana (Inicio: 10 Nov)
       </div>
-
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center text-xs">
-        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
-          <span class="font-bold text-sky-400">LUNES</span>
-          <span class="font-semibold text-slate-200 my-1 text-sm">Pierna A</span>
-          <span class="text-slate-400 text-[11px]">Cuádriceps & Glúteo</span>
+      <div class="week-grid">
+        <div class="day-box day-done">
+          <span class="day-name" style="color: #4ade80;">✓ Martes 10 Nov</span>
+          <span class="day-focus">Pierna General</span>
+          <span class="day-desc">Día 1 completado (con compañera)</span>
         </div>
-        <div class="p-3 rounded-xl bg-slate-950 border border-emerald-500/40 flex flex-col justify-between">
-          <span class="font-bold text-emerald-400">MARTES ✓</span>
-          <span class="font-semibold text-slate-200 my-1 text-sm">Torso A / Empuje</span>
-          <span class="text-slate-400 text-[11px]">Pecho, Hombro, Tríceps</span>
+        <div class="day-box day-done">
+          <span class="day-name" style="color: #4ade80;">✓ Miércoles 11 Nov</span>
+          <span class="day-focus">Pecho + Remo</span>
+          <span class="day-desc">Día 2 completado (pecho y espalda)</span>
         </div>
-        <div class="p-3 rounded-xl bg-slate-950 border border-emerald-500/40 flex flex-col justify-between">
-          <span class="font-bold text-emerald-400">MIÉRCOLES ✓</span>
-          <span class="font-semibold text-slate-200 my-1 text-sm">Jalón / Espalda</span>
-          <span class="text-slate-400 text-[11px]">Remo, Poleas & Bíceps</span>
+        <div class="day-box day-today">
+          <span class="day-name" style="color: #38bdf8;">🔥 Jueves 12 Nov (HOY)</span>
+          <span class="day-focus">Hombro, Brazos & Jalón</span>
+          <span class="day-desc">Deja descansar pierna 72h y pecho</span>
         </div>
-        <div class="p-3 rounded-xl bg-sky-950/40 border border-sky-500/60 flex flex-col justify-between">
-          <span class="font-bold text-sky-300">JUEVES (Hoy)</span>
-          <span class="font-semibold text-white my-1 text-sm">Pierna B</span>
-          <span class="text-slate-300 text-[11px]">Isquios, Glúteo & Gemelos</span>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
-          <span class="font-bold text-sky-400">VIERNES</span>
-          <span class="font-semibold text-slate-200 my-1 text-sm">Torso B / Brazos</span>
-          <span class="text-slate-400 text-[11px]">Hombro, Brazos & Core</span>
+        <div class="day-box">
+          <span class="day-name" style="color: #94a3b8;">⏳ Viernes 13 Nov</span>
+          <span class="day-focus">Pierna B (Femoral)</span>
+          <span class="day-desc">Isquios, Glúteo, Gemelos & Core</span>
         </div>
       </div>
-      <p class="text-xs text-slate-400 mt-3">
-        💡 <strong>Flexibilidad 4 o 5 días:</strong> Si una semana vas 4 días, tomas descanso el miércoles y el viernes haces Torso completo. Si vas 5 días, completas la semana y descansas el fin de semana.
+      <p class="subtitle" style="margin-top: 10px;">
+        <strong>¿Por qué hoy toca Hombro, Brazos y Jalón de Espalda?</strong> Como hiciste pierna el martes (aún recuperándose) y pecho ayer miércoles, entrenar hoy <strong>hombros, bíceps, tríceps y jalones</strong> evita sobrecargar el pecho y le da a tus piernas 72 horas de descanso óptimo antes de volver a hacerlas mañana viernes.
       </p>
     </section>
 
-    <!-- Botones de Pestañas por Día -->
-    <div class="flex flex-wrap gap-2">
-      <button onclick="showDay('d1')" id="tab-d1" class="day-tab px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all">
-        Día 1: Pierna A
-      </button>
-      <button onclick="showDay('d2')" id="tab-d2" class="day-tab px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all">
-        Día 2: Torso A (Pecho/Tríceps)
-      </button>
-      <button onclick="showDay('d3')" id="tab-d3" class="day-tab px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all">
-        Día 3: Jalón (Espalda/Bíceps)
-      </button>
-      <button onclick="showDay('d4')" id="tab-d4" class="day-tab active-tab px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all">
-        Día 4: Pierna B (Hoy)
-      </button>
-      <button onclick="showDay('d5')" id="tab-d5" class="day-tab px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all">
-        Día 5: Brazos & Hombros
-      </button>
+    <!-- Pestañas de Días -->
+    <div class="tabs">
+      <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab active-tab">🔥 HOY Jueves: Hombro, Brazos & Jalón</button>
+      <button onclick="showDay('piernab')" id="tab-piernab" class="day-tab">⚡ Viernes: Pierna B (Femoral/Glúteo)</button>
+      <button onclick="showDay('piernaa')" id="tab-piernaa" class="day-tab">🦵 Día 1 (Sem 2): Pierna A</button>
+      <button onclick="showDay('empuje')" id="tab-empuje" class="day-tab">🛡️ Día 2 (Sem 2): Torso / Empuje</button>
+      <button onclick="showDay('espalda')" id="tab-espalda" class="day-tab">🦅 Día 3 (Sem 2): Espalda & Bíceps</button>
     </div>
 
-    <!-- Contenedor de Tablas de Ejercicios -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-lg">
+    <!-- Contenido Dinámico -->
+    <div class="card">
 
-      <!-- DÍA 1: PIERNA A -->
-      <div id="content-d1" class="day-content hidden space-y-4">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <div>
-            <h3 class="text-lg font-bold text-sky-400">🦵 Día 1: Pierna A (Cuádriceps y Glúteo)</h3>
-            <p class="text-xs text-slate-400">Calentamiento: 5 min elíptica + movilidad de cadera y rodillas</p>
+      <!-- HOY JUEVES: HOMBRO, BRAZOS, JALÓN Y CORE -->
+      <div id="content-hoy" class="day-content">
+        <div class="hero-banner">
+          <img src="./img/espalda_brazos.png" alt="Espalda, Hombros y Brazos" onerror="this.style.display='none'">
+          <div class="hero-overlay">
+            <div class="hero-title">🔥 Propuesta de Hoy Jueves: Hombros, Brazos & Espalda Alta</div>
+            <div class="hero-sub">Complementa el remo de ayer sin fatigar el pecho. Tiempo estimado: 50 min.</div>
           </div>
-          <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300">50–60 min</span>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+        <div class="table-wrap">
+          <table>
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/60">
-                <th class="py-2.5 px-3">Ejercicio</th>
-                <th class="py-2.5 px-3">Músculo</th>
-                <th class="py-2.5 px-3 text-center">Series x Reps</th>
-                <th class="py-2.5 px-3 text-center">Descanso</th>
-                <th class="py-2.5 px-3">Clave Técnica / Notas</th>
-                <th class="py-2.5 px-3 text-center">Check</th>
+              <tr>
+                <th>Ejercicio</th>
+                <th>Enfoque</th>
+                <th style="text-align:center;">Series x Reps</th>
+                <th style="text-align:center;">Peso (kg)</th>
+                <th>Técnica Clave</th>
+                <th style="text-align:center;">Hecho</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/80 text-slate-200">
+            <tbody>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">1. Prensa de Piernas (45°)</td>
-                <td class="py-3 px-3 text-slate-400">Cuádriceps / Glúteo</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">90s</td>
-                <td class="py-3 px-3 text-slate-300">Pies a la anchura de hombros; baja profundo sin despegar la cadera del respaldo.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">1. Jalón al Pecho en Polea</div><div class="ex-muscle">Dorsal Ancho</div></td>
+                <td class="ex-muscle">Completa la espalda de ayer</td>
+                <td class="ex-sets">4 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="hoy-1" placeholder="kg"></td>
+                <td class="ex-note">Agarre neutro o abierto, jala llevando los codos hacia las costillas sacando el pecho.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="hoy-1"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">2. Extensión de Cuádriceps</td>
-                <td class="py-3 px-3 text-slate-400">Cuádriceps aislados</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 12–15</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Aguanta 1 segundo arriba apretando los muslos. Baja lento en 2 segundos.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">2. Press Militar c/ Mancuernas</div><div class="ex-muscle">Hombro Anterior / Medio</div></td>
+                <td class="ex-muscle">Fuerza de hombros</td>
+                <td class="ex-sets">3 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="hoy-2" placeholder="kg"></td>
+                <td class="ex-note">Sentado con respaldo casi recto. Baja las mancuernas a la altura de tus orejas.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="hoy-2"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">3. Sentadilla Goblet c/ Mancuerna</td>
-                <td class="py-3 px-3 text-slate-400">Pierna general y Core</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">90s</td>
-                <td class="py-3 px-3 text-slate-300">Mancuerna pegada al pecho, pecho erguido, codos apuntando al suelo.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">3. Elevaciones Laterales</div><div class="ex-muscle">Deltoides Lateral</div></td>
+                <td class="ex-muscle">Amplitud de hombros</td>
+                <td class="ex-sets">4 x 12–15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="hoy-3" placeholder="kg"></td>
+                <td class="ex-note">Peso ligero/moderado. Sube sin encoger el cuello, codos semi-flexionados.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="hoy-3"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">4. Curl Femoral Acostado</td>
-                <td class="py-3 px-3 text-slate-400">Isquiotibiales</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 12</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">No levantes la cadera del banco al flexionar las rodillas.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">4. Face Pull en Polea Alta</div><div class="ex-muscle">Hombro Posterior & Postura</div></td>
+                <td class="ex-muscle">Salud articular</td>
+                <td class="ex-sets">3 x 15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="hoy-4" placeholder="kg"></td>
+                <td class="ex-note">Jala la cuerda hacia tu frente separando las manos al final.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="hoy-4"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">5. Elevación de Talones en Máquina</td>
-                <td class="py-3 px-3 text-slate-400">Gemelos</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 15</td>
-                <td class="py-3 px-3 text-center font-mono">45s</td>
-                <td class="py-3 px-3 text-slate-300">Estiramiento completo abajo y pausa arriba de puntitas.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">5. Curl de Bíceps c/ Barra Z o Mancuernas</div><div class="ex-muscle">Bíceps</div></td>
+                <td class="ex-muscle">Brazos</td>
+                <td class="ex-sets">3 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="hoy-5" placeholder="kg"></td>
+                <td class="ex-note">Codos fijos pegados al costado, sin columpiar la espalda.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="hoy-5"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">6. Plancha Abdominal</td>
-                <td class="py-3 px-3 text-slate-400">Core profundo</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 30–45s</td>
-                <td class="py-3 px-3 text-center font-mono">45s</td>
-                <td class="py-3 px-3 text-slate-300">Cuerpo recto como tabla, ombligo hacia adentro apretando glúteos.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">6. Extensión de Tríceps Polea (Cuerda)</div><div class="ex-muscle">Tríceps</div></td>
+                <td class="ex-muscle">Brazos</td>
+                <td class="ex-sets">3 x 12–15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="hoy-6" placeholder="kg"></td>
+                <td class="ex-note">Abre la cuerda hacia afuera abajo y controla la subida.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="hoy-6"></td>
+              </tr>
+              <tr>
+                <td><div class="ex-name">7. Plancha Abdominal</div><div class="ex-muscle">Core</div></td>
+                <td class="ex-muscle">Estabilidad</td>
+                <td class="ex-sets">3 x 35–45s</td>
+                <td style="text-align:center;">-</td>
+                <td class="ex-note">Aprieta abdomen y glúteos manteniendo la espalda recta.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="hoy-7"></td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- DÍA 2: TORSO A / EMPUJE -->
-      <div id="content-d2" class="day-content hidden space-y-4">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <div>
-            <h3 class="text-lg font-bold text-sky-400">🛡️ Día 2: Torso A / Empuje (Pecho, Hombro y Tríceps)</h3>
-            <p class="text-xs text-slate-400">Calentamiento: Rotaciones de manguito rotador y 2 series de aproximación livianas</p>
+      <!-- VIERNES: PIERNA B -->
+      <div id="content-piernab" class="day-content hidden">
+        <div class="hero-banner">
+          <img src="./img/pierna.png" alt="Pierna B Femoral y Glúteo" onerror="this.style.display='none'">
+          <div class="hero-overlay">
+            <div class="hero-title">⚡ Viernes: Pierna B (Femoral, Glúteo & Gemelos)</div>
+            <div class="hero-sub">Ya con 72h de recuperación desde el martes. Enfoque en cadena posterior.</div>
           </div>
-          <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300">55 min</span>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+        <div class="table-wrap">
+          <table>
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/60">
-                <th class="py-2.5 px-3">Ejercicio</th>
-                <th class="py-2.5 px-3">Músculo</th>
-                <th class="py-2.5 px-3 text-center">Series x Reps</th>
-                <th class="py-2.5 px-3 text-center">Descanso</th>
-                <th class="py-2.5 px-3">Clave Técnica / Notas</th>
-                <th class="py-2.5 px-3 text-center">Check</th>
+              <tr>
+                <th>Ejercicio</th>
+                <th>Músculo</th>
+                <th style="text-align:center;">Series x Reps</th>
+                <th style="text-align:center;">Peso (kg)</th>
+                <th>Técnica Clave</th>
+                <th style="text-align:center;">Hecho</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/80 text-slate-200">
+            <tbody>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">1. Press de Banca Plano (Mancuernas o Barra)</td>
-                <td class="py-3 px-3 text-slate-400">Pectoral Mayor</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">90s</td>
-                <td class="py-3 px-3 text-slate-300">Retrae escápulas (saca pecho). Los codos a 45-60 grados del torso, nunca a 90°.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">1. Peso Muerto Rumano c/ Mancuernas</div></td>
+                <td class="ex-muscle">Isquios / Glúteo</td>
+                <td class="ex-sets">4 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pb-1" placeholder="kg"></td>
+                <td class="ex-note">Rodillas semi-flexionadas fijas. Empuja la cadera atrás sintiendo el estirón femoral.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pb-1"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">2. Press Inclinado con Mancuernas (30°)</td>
-                <td class="py-3 px-3 text-slate-400">Pectoral Superior</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">75s</td>
-                <td class="py-3 px-3 text-slate-300">Inclinación moderada para que no trabaje todo el hombro. Controla la bajada.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">2. Curl Femoral Sentado o Acostado</div></td>
+                <td class="ex-muscle">Isquiotibiales</td>
+                <td class="ex-sets">4 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pb-2" placeholder="kg"></td>
+                <td class="ex-note">Frena el regreso del peso en 2 segundos completos.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pb-2"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">3. Aperturas en Máquina (Pec-Deck)</td>
-                <td class="py-3 px-3 text-slate-400">Pectoral (Aislamiento)</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 12–15</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Siente el estiramiento sin forzar el hombro hacia atrás. Aprieta al centro.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">3. Prensa (Pies altos y separados)</div></td>
+                <td class="ex-muscle">Glúteo y Aductores</td>
+                <td class="ex-sets">3 x 12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pb-3" placeholder="kg"></td>
+                <td class="ex-note">Poner los pies arriba en la plataforma enfoca el esfuerzo en glúteos e isquios.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pb-3"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">4. Press Militar con Mancuernas</td>
-                <td class="py-3 px-3 text-slate-400">Hombro anterior</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">75s</td>
-                <td class="py-3 px-3 text-slate-300">Espalda bien apoyada en el respaldo inclinado casi a 90°. No choques mancuernas.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">4. Zancadas / Desplantes Estáticos</div></td>
+                <td class="ex-muscle">Pierna Global</td>
+                <td class="ex-sets">3 x 10 c/ lado</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pb-4" placeholder="kg"></td>
+                <td class="ex-note">Paso largo y controlado, baja verticalmente sin golpear la rodilla.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pb-4"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">5. Elevaciones Laterales (Mancuernas)</td>
-                <td class="py-3 px-3 text-slate-400">Deltoides lateral</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 12–15</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Peso moderado. Codos ligeramente flexionados, sube hasta la altura de los hombros.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
-              </tr>
-              <tr>
-                <td class="py-3 px-3 font-semibold text-white">6. Extensión de Tríceps Polea c/ Cuerda</td>
-                <td class="py-3 px-3 text-slate-400">Tríceps</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 12–15</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Codos pegados a los costados fijos, abre la cuerda hacia afuera abajo.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">5. Elevación de Talones (Gemelos)</div></td>
+                <td class="ex-muscle">Pantorrilla</td>
+                <td class="ex-sets">4 x 15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pb-5" placeholder="kg"></td>
+                <td class="ex-note">Pausa de 1 segundo arriba y estiramiento completo abajo.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pb-5"></td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- DÍA 3: JALÓN / ESPALDA Y BÍCEPS -->
-      <div id="content-d3" class="day-content hidden space-y-4">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <div>
-            <h3 class="text-lg font-bold text-sky-400">🦅 Día 3: Jalón (Espalda, Deltoides Posterior y Bíceps)</h3>
-            <p class="text-xs text-slate-400">Excelente para complementar el remo que hiciste ayer</p>
+      <!-- SEMANA 2 - DÍA 1: PIERNA A -->
+      <div id="content-piernaa" class="day-content hidden">
+        <div class="hero-banner">
+          <img src="./img/pierna.png" alt="Pierna A Cuádriceps" onerror="this.style.display='none'">
+          <div class="hero-overlay">
+            <div class="hero-title">🦵 Pierna A (Cuádriceps y Glúteo)</div>
+            <div class="hero-sub">Inicio estándar de semana a partir de la Semana 2.</div>
           </div>
-          <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300">50–55 min</span>
         </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+        <div class="table-wrap">
+          <table>
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/60">
-                <th class="py-2.5 px-3">Ejercicio</th>
-                <th class="py-2.5 px-3">Músculo</th>
-                <th class="py-2.5 px-3 text-center">Series x Reps</th>
-                <th class="py-2.5 px-3 text-center">Descanso</th>
-                <th class="py-2.5 px-3">Clave Técnica / Notas</th>
-                <th class="py-2.5 px-3 text-center">Check</th>
+              <tr>
+                <th>Ejercicio</th>
+                <th>Músculo</th>
+                <th style="text-align:center;">Series x Reps</th>
+                <th style="text-align:center;">Peso (kg)</th>
+                <th>Técnica Clave</th>
+                <th style="text-align:center;">Hecho</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/80 text-slate-200">
+            <tbody>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">1. Jalón al Pecho en Polea Alta</td>
-                <td class="py-3 px-3 text-slate-400">Dorsal Ancho</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">90s</td>
-                <td class="py-3 px-3 text-slate-300">Tira con los codos hacia abajo y saca pecho. No balancees el cuerpo hacia atrás.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">1. Prensa de Piernas 45°</div></td>
+                <td class="ex-muscle">Cuádriceps</td>
+                <td class="ex-sets">4 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pa-1" placeholder="kg"></td>
+                <td class="ex-note">Pies al centro a anchura de hombros. No despegues la espalda baja.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pa-1"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">2. Remo en Polea Baja (Agarre Cerrado en V)</td>
-                <td class="py-3 px-3 text-slate-400">Espalda Media / Grosor</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">75s</td>
-                <td class="py-3 px-3 text-slate-300">Lleva el agarre hacia el ombligo y junta los omóplatos 1 segundo atrás.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">2. Extensión de Cuádriceps</div></td>
+                <td class="ex-muscle">Cuádriceps</td>
+                <td class="ex-sets">3 x 12–15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pa-2" placeholder="kg"></td>
+                <td class="ex-note">1 seg de contracción arriba.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pa-2"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">3. Remo Unilateral con Mancuerna</td>
-                <td class="py-3 px-3 text-slate-400">Dorsal Unilateral</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Apoya rodilla y mano en banco plano; sube el codo rozando las costillas.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">3. Sentadilla Goblet c/ Mancuerna</div></td>
+                <td class="ex-muscle">Pierna Global</td>
+                <td class="ex-sets">3 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pa-3" placeholder="kg"></td>
+                <td class="ex-note">Torso vertical, profundidad cómoda.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pa-3"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">4. Face Pull en Polea Alta (Cuerda)</td>
-                <td class="py-3 px-3 text-slate-400">Hombro posterior y Manguito</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 15</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Jala la cuerda hacia la altura de la frente separando las manos. Excelente para postura.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">4. Curl Femoral Acostado</div></td>
+                <td class="ex-muscle">Femoral</td>
+                <td class="ex-sets">3 x 12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pa-4" placeholder="kg"></td>
+                <td class="ex-note">Controla la bajada.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pa-4"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">5. Curl de Bíceps c/ Barra Z o Mancuernas</td>
-                <td class="py-3 px-3 text-slate-400">Bíceps Braquial</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Codos pegados al cuerpo, sin balancear la espalda baja.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
-              </tr>
-              <tr>
-                <td class="py-3 px-3 font-semibold text-white">6. Curl Martillo con Mancuernas</td>
-                <td class="py-3 px-3 text-slate-400">Braquial y Antebrazo</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 12</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Palmas mirándose entre sí (agarre neutro). Da grosor a los brazos.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">5. Gemelos en Máquina</div></td>
+                <td class="ex-muscle">Pantorrilla</td>
+                <td class="ex-sets">4 x 15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="pa-5" placeholder="kg"></td>
+                <td class="ex-note">Sin rebotar.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="pa-5"></td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- DÍA 4: PIERNA B (HOY JUEVES) -->
-      <div id="content-d4" class="day-content space-y-4">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <div>
-            <div class="flex items-center gap-2">
-              <h3 class="text-lg font-bold text-sky-400">⚡ Día 4: Pierna B (Cadena Posterior: Isquios & Glúteo)</h3>
-              <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-bold px-2 py-0.5 rounded">Recomendado Hoy</span>
-            </div>
-            <p class="text-xs text-slate-400">Enfocado en la parte trasera de la pierna para balancear el trabajo del martes</p>
+      <!-- SEMANA 2 - DÍA 2: EMPUJE -->
+      <div id="content-empuje" class="day-content hidden">
+        <div class="hero-banner">
+          <img src="./img/empuje.png" alt="Torso Empuje" onerror="this.style.display='none'">
+          <div class="hero-overlay">
+            <div class="hero-title">🛡️ Torso A / Empuje (Pecho, Hombro & Tríceps)</div>
+            <div class="hero-sub">Ideal para entrenar con Laura o Yedra con rotación ágil.</div>
           </div>
-          <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300">50–55 min</span>
         </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+        <div class="table-wrap">
+          <table>
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/60">
-                <th class="py-2.5 px-3">Ejercicio</th>
-                <th class="py-2.5 px-3">Músculo</th>
-                <th class="py-2.5 px-3 text-center">Series x Reps</th>
-                <th class="py-2.5 px-3 text-center">Descanso</th>
-                <th class="py-2.5 px-3">Clave Técnica / Notas</th>
-                <th class="py-2.5 px-3 text-center">Check</th>
+              <tr>
+                <th>Ejercicio</th>
+                <th>Músculo</th>
+                <th style="text-align:center;">Series x Reps</th>
+                <th style="text-align:center;">Peso (kg)</th>
+                <th>Técnica Clave</th>
+                <th style="text-align:center;">Hecho</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/80 text-slate-200">
-              <tr class="bg-sky-950/30">
-                <td class="py-3 px-3 font-semibold text-white">1. Peso Muerto Rumano c/ Mancuernas</td>
-                <td class="py-3 px-3 text-slate-400">Isquiotibiales y Glúteo</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">90s</td>
-                <td class="py-3 px-3 text-slate-300">Rodillas semi-flexionadas (sin doblarlas más). Empuja la cadera hacia atrás sintiendo el estirón atrás del muslo.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+            <tbody>
+              <tr>
+                <td><div class="ex-name">1. Press de Banca Plano</div></td>
+                <td class="ex-muscle">Pectoral</td>
+                <td class="ex-sets">4 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="em-1" placeholder="kg"></td>
+                <td class="ex-note">Escápulas retraídas, codos a 45°.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="em-1"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">2. Curl Femoral Sentado o Acostado</td>
-                <td class="py-3 px-3 text-slate-400">Isquios aislados</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Baja el peso frenándolo en 2-3 segundos completos.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">2. Press Inclinado c/ Mancuernas</div></td>
+                <td class="ex-muscle">Pecho Superior</td>
+                <td class="ex-sets">3 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="em-2" placeholder="kg"></td>
+                <td class="ex-note">Banco a 30°. Controla el descenso.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="em-2"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">3. Prensa Pies Altos y Separados</td>
-                <td class="py-3 px-3 text-slate-400">Glúteos / Aductores</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 12</td>
-                <td class="py-3 px-3 text-center font-mono">75s</td>
-                <td class="py-3 px-3 text-slate-300">Al poner los pies arriba en la plataforma activas mucho más glúteo e isquios.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">3. Pec-Deck / Aperturas</div></td>
+                <td class="ex-muscle">Pecho</td>
+                <td class="ex-sets">3 x 12–15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="em-3" placeholder="kg"></td>
+                <td class="ex-note">Aprieta 1 seg al juntar brazos.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="em-3"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">4. Zancadas / Desplantes Estáticos</td>
-                <td class="py-3 px-3 text-slate-400">Pierna global & Estabilidad</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 10 c/ pierna</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Paso largo, la rodilla trasera casi roza el suelo suavemente.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">4. Press Militar Mancuernas</div></td>
+                <td class="ex-muscle">Hombro</td>
+                <td class="ex-sets">3 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="em-4" placeholder="kg"></td>
+                <td class="ex-note">No choques las mancuernas arriba.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="em-4"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">5. Gemelos en Máquina o Prensa</td>
-                <td class="py-3 px-3 text-slate-400">Sóleo y Gemelos</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 15</td>
-                <td class="py-3 px-3 text-center font-mono">45s</td>
-                <td class="py-3 px-3 text-slate-300">Rango de movimiento completo. Sin rebotar.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">5. Elevaciones Laterales</div></td>
+                <td class="ex-muscle">Hombro Lateral</td>
+                <td class="ex-sets">4 x 12–15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="em-5" placeholder="kg"></td>
+                <td class="ex-note">Movimiento limpio sin impulso.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="em-5"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">6. Elevaciones de Piernas (Abdomen)</td>
-                <td class="py-3 px-3 text-slate-400">Abdomen inferior</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 12–15</td>
-                <td class="py-3 px-3 text-center font-mono">45s</td>
-                <td class="py-3 px-3 text-slate-300">Acostado en banco o colgado, sube con fuerza del abdomen, no con inercia.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">6. Extensión Tríceps Polea</div></td>
+                <td class="ex-muscle">Tríceps</td>
+                <td class="ex-sets">3 x 12–15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="em-6" placeholder="kg"></td>
+                <td class="ex-note">Codos pegados a costados.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="em-6"></td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- DÍA 5: BRAZOS Y HOMBROS (OPCIONAL 5º DÍA) -->
-      <div id="content-d5" class="day-content hidden space-y-4">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <div>
-            <h3 class="text-lg font-bold text-sky-400">🎯 Día 5: Torso B / Brazos, Hombros & Detalle</h3>
-            <p class="text-xs text-slate-400">Sesión dinámica si vas 5 días a la semana con Laura o Yedra</p>
+      <!-- SEMANA 2 - DÍA 3: ESPALDA Y BICEPS -->
+      <div id="content-espalda" class="day-content hidden">
+        <div class="hero-banner">
+          <img src="./img/espalda_brazos.png" alt="Espalda y Brazos" onerror="this.style.display='none'">
+          <div class="hero-overlay">
+            <div class="hero-title">🦅 Espalda, Posterior y Bíceps (Jalón)</div>
+            <div class="hero-sub">Construye postura sólida y brazos fuertes.</div>
           </div>
-          <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300">45–50 min</span>
         </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+        <div class="table-wrap">
+          <table>
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/60">
-                <th class="py-2.5 px-3">Ejercicio</th>
-                <th class="py-2.5 px-3">Músculo</th>
-                <th class="py-2.5 px-3 text-center">Series x Reps</th>
-                <th class="py-2.5 px-3 text-center">Descanso</th>
-                <th class="py-2.5 px-3">Clave Técnica / Notas</th>
-                <th class="py-2.5 px-3 text-center">Check</th>
+              <tr>
+                <th>Ejercicio</th>
+                <th>Músculo</th>
+                <th style="text-align:center;">Series x Reps</th>
+                <th style="text-align:center;">Peso (kg)</th>
+                <th>Técnica Clave</th>
+                <th style="text-align:center;">Hecho</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/80 text-slate-200">
+            <tbody>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">1. Press de Hombros en Máquina</td>
-                <td class="py-3 px-3 text-slate-400">Deltoides</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">75s</td>
-                <td class="py-3 px-3 text-slate-300">Movimiento fluido sin bloquear codos violentamente arriba.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">1. Jalón al Pecho en Polea</div></td>
+                <td class="ex-muscle">Dorsales</td>
+                <td class="ex-sets">4 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="es-1" placeholder="kg"></td>
+                <td class="ex-note">Codos hacia el suelo sacando el pecho.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="es-1"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">2. Elevaciones Laterales en Polea o Mancuernas</td>
-                <td class="py-3 px-3 text-slate-400">Hombro lateral</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">4 x 12–15</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">La polea mantiene tensión continua en todo el rango.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">2. Remo en Polea Baja (V)</div></td>
+                <td class="ex-muscle">Espalda Media</td>
+                <td class="ex-sets">4 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="es-2" placeholder="kg"></td>
+                <td class="ex-note">Junta escápulas 1 seg atrás.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="es-2"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">3. Curl de Bíceps en Banco Inclinado</td>
-                <td class="py-3 px-3 text-slate-400">Bíceps (Cabeza Larga)</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 12</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">El banco a 60° permite máximo estiramiento del bíceps.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">3. Remo Unilateral c/ Mancuerna</div></td>
+                <td class="ex-muscle">Dorsal</td>
+                <td class="ex-sets">3 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="es-3" placeholder="kg"></td>
+                <td class="ex-note">Apoyado en banco, jala hacia la cadera.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="es-3"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">4. Fondos Asistidos o en Paralelas</td>
-                <td class="py-3 px-3 text-slate-400">Tríceps y Pecho bajo</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 10–12</td>
-                <td class="py-3 px-3 text-center font-mono">75s</td>
-                <td class="py-3 px-3 text-slate-300">Usa la almohadilla de ayuda para no sobrecargar los hombros.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">4. Face Pull</div></td>
+                <td class="ex-muscle">Hombro Posterior</td>
+                <td class="ex-sets">3 x 15</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="es-4" placeholder="kg"></td>
+                <td class="ex-note">Cuerda hacia la frente.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="es-4"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">5. Extensiones Katana / Tras Nuca Polea</td>
-                <td class="py-3 px-3 text-slate-400">Tríceps (Cabeza Larga)</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 12–15</td>
-                <td class="py-3 px-3 text-center font-mono">60s</td>
-                <td class="py-3 px-3 text-slate-300">Muy amigable con los codos y gran congestión en tríceps.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">5. Curl Bíceps Barra Z</div></td>
+                <td class="ex-muscle">Bíceps</td>
+                <td class="ex-sets">3 x 10–12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="es-5" placeholder="kg"></td>
+                <td class="ex-note">Sin balancear la espalda.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="es-5"></td>
               </tr>
               <tr>
-                <td class="py-3 px-3 font-semibold text-white">6. Plancha Frontal + Plancha Lateral</td>
-                <td class="py-3 px-3 text-slate-400">Core integral</td>
-                <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">3 x 30s/lado</td>
-                <td class="py-3 px-3 text-center font-mono">45s</td>
-                <td class="py-3 px-3 text-slate-300">Termina el entrenamiento activando el cinturón abdominal.</td>
-                <td class="py-3 px-3 text-center"><input type="checkbox" class="w-5 h-5 rounded text-sky-500 bg-slate-800 border-slate-700"></td>
+                <td><div class="ex-name">6. Curl Martillo Mancuernas</div></td>
+                <td class="ex-muscle">Braquial / Antebrazo</td>
+                <td class="ex-sets">3 x 12</td>
+                <td style="text-align:center;"><input type="text" class="weight-input" data-key="es-6" placeholder="kg"></td>
+                <td class="ex-note">Agarre neutro.</td>
+                <td style="text-align:center;"><input type="checkbox" data-chk="es-6"></td>
               </tr>
             </tbody>
           </table>
@@ -505,68 +680,135 @@
 
     </div>
 
-    <!-- Guía Visual de Intensidad y RIR -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
-        <h4 class="font-bold text-amber-400 text-sm mb-1">🎯 Regla RIR 2 (Clave Semanas 1–3)</h4>
-        <p class="text-slate-300 leading-relaxed">
-          <strong>Reps In Reserve:</strong> Elige un peso con el que, al terminar la repetición 10 o 12, sientas que podías hacer 2 repeticiones más de forma limpia. <em>No llegues al fallo todavía.</em>
-        </p>
+    <!-- Bitácora Personal Guardada Offline -->
+    <section class="card">
+      <div class="section-title">
+        <span>📝</span> Mi Bitácora de Entrenamientos (Guardado Local Offline)
       </div>
-      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
-        <h4 class="font-bold text-sky-400 text-sm mb-1">⏳ Tempo 2-0-2</h4>
-        <p class="text-slate-300 leading-relaxed">
-          Tarda <strong>2 segundos en bajar</strong> el peso de forma controlada y <strong>2 segundos en subir</strong> sin impulsarte. La bajada controlada construye la fuerza en tendones.
-        </p>
+      <div class="log-form">
+        <input type="text" id="logText" class="log-input" placeholder="Ej: Jueves 12 Nov - Hombro y Brazos con Laura (Press 10kg)...">
+        <button onclick="addLog()" class="btn-primary">+ Guardar Sesión</button>
       </div>
-      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
-        <h4 class="font-bold text-emerald-400 text-sm mb-1">📈 Cuándo subir de peso</h4>
-        <p class="text-slate-300 leading-relaxed">
-          Solo sube peso cuando en todas las series del ejercicio alcances el rango máximo (ej. 4 series completas de 12 repeticiones sin temblar ni deformar la postura).
-        </p>
+      <div id="logList" class="log-list"></div>
+    </section>
+
+    <!-- Reglas de Oro -->
+    <div class="info-grid">
+      <div class="info-card">
+        <h4 style="color: var(--amber);">🎯 Regla RIR 2 (Semanas 1–3)</h4>
+        <p>Elige un peso con el que sientas que podías hacer <strong>2 repeticiones más</strong> limpias al terminar la serie. Evita el fallo total estas semanas para no lesionarte.</p>
+      </div>
+      <div class="info-card">
+        <h4 style="color: var(--sky);">⏳ Tempo Controlado 2-0-2</h4>
+        <p>Tarda 2 segundos en bajar el peso y 2 segundos en subirlo. Nunca dejes caer la barra o las placas de golpe.</p>
+      </div>
+      <div class="info-card">
+        <h4 style="color: var(--emerald);">✈️ 100% Sin Conexión (PWA)</h4>
+        <p>Una vez cargada en tu iPad, toda la app (imágenes, tablas, cronómetro y tus pesos) queda guardada en tu dispositivo aunque no tengas señal en el gym.</p>
       </div>
     </div>
 
   </div>
 
   <script>
+    // Registrar Service Worker para funcionamiento 100% offline
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(() => {
+          document.getElementById('offlineStatus').innerText = '⚡ Modo Offline Activo (Sin Internet)';
+        }).catch(() => {});
+      });
+    }
+
+    // Pestañas
     function showDay(dayId) {
       document.querySelectorAll('.day-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.day-tab').forEach(el => el.classList.remove('active-tab'));
-      
-      const targetContent = document.getElementById('content-' + dayId);
-      const targetTab = document.getElementById('tab-' + dayId);
-      
-      if (targetContent) targetContent.classList.remove('hidden');
-      if (targetTab) targetTab.classList.add('active-tab');
+      document.getElementById('content-' + dayId)?.classList.remove('hidden');
+      document.getElementById('tab-' + dayId)?.classList.add('active-tab');
+      localStorage.setItem('gym_active_tab', dayId);
     }
 
-    let timerDuration = 90;
-    let timerRemaining = 90;
+    // Cargar pestaña guardada
+    const savedTab = localStorage.getItem('gym_active_tab');
+    if (savedTab && document.getElementById('content-' + savedTab)) {
+      showDay(savedTab);
+    }
+
+    // Guardar pesos y checkboxes automáticamente en localStorage
+    document.querySelectorAll('.weight-input').forEach(input => {
+      const key = 'gym_w_' + input.dataset.key;
+      input.value = localStorage.getItem(key) || '';
+      input.addEventListener('input', () => localStorage.setItem(key, input.value));
+    });
+
+    document.querySelectorAll('input[type="checkbox"][data-chk]').forEach(chk => {
+      const key = 'gym_c_' + chk.dataset.chk;
+      chk.checked = localStorage.getItem(key) === 'true';
+      chk.addEventListener('change', () => localStorage.setItem(key, chk.checked));
+    });
+
+    // Bitácora Offline
+    const defaultLogs = [
+      { id: 1, text: '✅ Mar 10 Nov — Pierna general (Día 1 inicio)' },
+      { id: 2, text: '✅ Mié 11 Nov — Pecho y Espalda (Remo)' }
+    ];
+    let logs = JSON.parse(localStorage.getItem('gym_logs')) || defaultLogs;
+
+    function renderLogs() {
+      const list = document.getElementById('logList');
+      list.innerHTML = '';
+      logs.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'log-item';
+        div.innerHTML = `<span>${item.text}</span><button onclick="deleteLog(${item.id})" class="btn-sec" style="padding: 3px 8px; font-size: 11px;">✕</button>`;
+        list.appendChild(div);
+      });
+    }
+
+    function addLog() {
+      const input = document.getElementById('logText');
+      const val = input.value.trim();
+      if (!val) return;
+      logs.unshift({ id: Date.now(), text: '✅ ' + val });
+      localStorage.setItem('gym_logs', JSON.stringify(logs));
+      input.value = '';
+      renderLogs();
+    }
+
+    function deleteLog(id) {
+      logs = logs.filter(l => l.id !== id);
+      localStorage.setItem('gym_logs', JSON.stringify(logs));
+      renderLogs();
+    }
+    renderLogs();
+
+    // Cronómetro
+    let timerDuration = 60;
+    let timerRemaining = 60;
     let timerInterval = null;
     let isRunning = false;
 
-    function formatTime(seconds) {
-      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-      const s = (seconds % 60).toString().padStart(2, '0');
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
       return `${m}:${s}`;
     }
 
-    function setTimer(seconds) {
+    function setTimer(sec) {
       clearInterval(timerInterval);
       isRunning = false;
-      timerDuration = seconds;
-      timerRemaining = seconds;
-      document.getElementById('timerDisplay').innerText = formatTime(seconds);
-      document.getElementById('timerDisplay').classList.remove('text-emerald-400', 'text-rose-400');
-      document.getElementById('timerDisplay').classList.add('text-sky-400');
+      timerDuration = sec;
+      timerRemaining = sec;
+      const disp = document.getElementById('timerDisplay');
+      disp.innerText = formatTime(sec);
+      disp.style.color = 'var(--sky)';
       document.getElementById('startTimerBtn').innerText = '▶ Iniciar';
     }
 
     function toggleTimer() {
       const btn = document.getElementById('startTimerBtn');
-      const display = document.getElementById('timerDisplay');
-
+      const disp = document.getElementById('timerDisplay');
       if (isRunning) {
         clearInterval(timerInterval);
         isRunning = false;
@@ -575,19 +817,15 @@
         if (timerRemaining <= 0) timerRemaining = timerDuration;
         isRunning = true;
         btn.innerText = '⏸ Pausar';
-        display.classList.remove('text-rose-400');
-        display.classList.add('text-emerald-400');
-
+        disp.style.color = 'var(--emerald)';
         timerInterval = setInterval(() => {
           timerRemaining--;
-          display.innerText = formatTime(timerRemaining);
-
+          disp.innerText = formatTime(timerRemaining);
           if (timerRemaining <= 0) {
             clearInterval(timerInterval);
             isRunning = false;
-            display.innerText = "¡LISTO!";
-            display.classList.remove('text-emerald-400');
-            display.classList.add('text-rose-400');
+            disp.innerText = '¡LISTO!';
+            disp.style.color = 'var(--rose)';
             btn.innerText = '↺ Reiniciar';
             if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
           }
