@@ -478,6 +478,29 @@
         </div>
       </div>
 
+      <!-- Agregar Ejercicio Nuevo al Día Actual -->
+      <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <div style="font-size: 13px; font-weight: 800; color: var(--text-strong); margin-bottom: 10px;">
+          ➕ ¿Te pusieron otro ejercicio? Agrégalo a este día:
+        </div>
+        <div class="log-form" style="margin-bottom: 0;">
+          <input type="text" id="newExName" class="log-input" placeholder="Nombre (ej. Pullover en polea)">
+          <input type="text" id="newExMuscle" class="log-input" style="max-width: 160px;" placeholder="Músculo (ej. Dorsal)">
+          <input type="text" id="newExSets" class="log-input" style="max-width: 120px;" placeholder="Series (ej. 3 x 12)">
+          <select id="newExSvg" class="log-input" style="max-width: 170px;">
+            <option value="lat_pulldown">🖼️ Polea / Jalón</option>
+            <option value="bench_press">🖼️ Pecho / Barra</option>
+            <option value="shoulder_press">🖼️ Hombro / Press</option>
+            <option value="bicep_curl">🖼️ Brazos / Mancuerna</option>
+            <option value="leg_press">🖼️ Pierna / Prensa</option>
+            <option value="rdl">🖼️ Peso Muerto / Femoral</option>
+            <option value="plank">🖼️ Abdomen / Core</option>
+          </select>
+          <input type="text" id="newExNote" class="log-input" placeholder="Nota técnica (opcional)">
+          <button onclick="addCustomExercise()" class="btn-primary">+ Agregar a este Día</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- Bitácora Personal -->
@@ -578,30 +601,85 @@
       ]
     };
 
-    // Renderizar Tablas con SVGs
-    Object.keys(ROUTINES).forEach(dayKey => {
-      const tbody = document.getElementById('tbody-' + dayKey);
-      if (!tbody) return;
-      ROUTINES[dayKey].forEach(ex => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>
-            <div class="ex-cell">
-              <div class="ex-svg-box">${SVGS[ex.svg] || ''}</div>
-              <div>
-                <div class="ex-name">${ex.name}</div>
-                <div class="ex-muscle">${ex.muscle}</div>
+    // Ejercicios Personalizados por Día (Guardado Local)
+    let customExercises = JSON.parse(localStorage.getItem('gym_custom_exercises')) || {};
+    let currentDayId = localStorage.getItem('gym_active_tab') || 'hoy';
+
+    function renderAllTables() {
+      Object.keys(ROUTINES).forEach(dayKey => {
+        const tbody = document.getElementById('tbody-' + dayKey);
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const list = [...ROUTINES[dayKey], ...(customExercises[dayKey] || [])];
+        list.forEach(ex => {
+          const tr = document.createElement('tr');
+          const delBtn = ex.isCustom ? `<button onclick="deleteCustomExercise('${dayKey}', '${ex.id}')" class="btn-sec" style="padding: 2px 6px; font-size: 11px; margin-left: 6px;" title="Eliminar">✕</button>` : '';
+          tr.innerHTML = `
+            <td>
+              <div class="ex-cell">
+                <div class="ex-svg-box">${SVGS[ex.svg] || SVGS.lat_pulldown}</div>
+                <div>
+                  <div class="ex-name">${ex.name}${delBtn}</div>
+                  <div class="ex-muscle">${ex.muscle || 'Personalizado'}</div>
+                </div>
               </div>
-            </div>
-          </td>
-          <td class="ex-sets">${ex.sets}</td>
-          <td style="text-align:center;"><input type="text" class="weight-input" data-key="${ex.id}" placeholder="kg"></td>
-          <td class="ex-note">${ex.note}</td>
-          <td style="text-align:center;"><input type="checkbox" data-chk="${ex.id}"></td>
-        `;
-        tbody.appendChild(tr);
+            </td>
+            <td class="ex-sets">${ex.sets || '3 x 12'}</td>
+            <td style="text-align:center;"><input type="text" class="weight-input" data-key="${ex.id}" placeholder="kg"></td>
+            <td class="ex-note">${ex.note || 'Agregado manualmente'}</td>
+            <td style="text-align:center;"><input type="checkbox" data-chk="${ex.id}"></td>
+          `;
+          tbody.appendChild(tr);
+        });
       });
-    });
+      bindInputs();
+    }
+
+    function addCustomExercise() {
+      const name = document.getElementById('newExName').value.trim();
+      if (!name) return;
+      const muscle = document.getElementById('newExMuscle').value.trim() || 'Extra';
+      const sets = document.getElementById('newExSets').value.trim() || '3 x 12';
+      const svg = document.getElementById('newExSvg').value;
+      const note = document.getElementById('newExNote').value.trim() || 'Ejercicio agregado en sesión.';
+
+      if (!customExercises[currentDayId]) customExercises[currentDayId] = [];
+      customExercises[currentDayId].push({
+        id: 'cust-' + Date.now(),
+        svg,
+        name: '⭐ ' + name,
+        muscle,
+        sets,
+        note,
+        isCustom: true
+      });
+      localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercises));
+      document.getElementById('newExName').value = '';
+      document.getElementById('newExMuscle').value = '';
+      document.getElementById('newExSets').value = '';
+      document.getElementById('newExNote').value = '';
+      renderAllTables();
+    }
+
+    function deleteCustomExercise(dayKey, exId) {
+      if (!customExercises[dayKey]) return;
+      customExercises[dayKey] = customExercises[dayKey].filter(e => e.id !== exId);
+      localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercises));
+      renderAllTables();
+    }
+
+    function bindInputs() {
+      document.querySelectorAll('.weight-input').forEach(input => {
+        const key = 'gym_w_' + input.dataset.key;
+        input.value = localStorage.getItem(key) || '';
+        input.addEventListener('input', () => localStorage.setItem(key, input.value));
+      });
+      document.querySelectorAll('input[type="checkbox"][data-chk]').forEach(chk => {
+        const key = 'gym_c_' + chk.dataset.chk;
+        chk.checked = localStorage.getItem(key) === 'true';
+        chk.addEventListener('change', () => localStorage.setItem(key, chk.checked));
+      });
+    }
 
     // Tema Light / Dark
     function applyTheme(theme) {
@@ -632,26 +710,15 @@
 
     // Pestañas
     function showDay(dayId) {
+      currentDayId = dayId;
       document.querySelectorAll('.day-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.day-tab').forEach(el => el.classList.remove('active-tab'));
       document.getElementById('content-' + dayId)?.classList.remove('hidden');
       document.getElementById('tab-' + dayId)?.classList.add('active-tab');
       localStorage.setItem('gym_active_tab', dayId);
     }
-    const savedTab = localStorage.getItem('gym_active_tab');
-    if (savedTab && document.getElementById('content-' + savedTab)) showDay(savedTab);
-
-    // Persistencia de pesos y checkboxes
-    document.querySelectorAll('.weight-input').forEach(input => {
-      const key = 'gym_w_' + input.dataset.key;
-      input.value = localStorage.getItem(key) || '';
-      input.addEventListener('input', () => localStorage.setItem(key, input.value));
-    });
-    document.querySelectorAll('input[type="checkbox"][data-chk]').forEach(chk => {
-      const key = 'gym_c_' + chk.dataset.chk;
-      chk.checked = localStorage.getItem(key) === 'true';
-      chk.addEventListener('change', () => localStorage.setItem(key, chk.checked));
-    });
+    if (currentDayId && document.getElementById('content-' + currentDayId)) showDay(currentDayId);
+    renderAllTables();
 
     // Bitácora con botón de restauración
     const defaultLogs = [
