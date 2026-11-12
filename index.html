@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Mi GYM">
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./img/espalda_brazos.png">
-  <title>Mi GYM - Plan de Entrenamiento Offline</title>
+  <title>Mi GYM - App Móvil Offline</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -16,7 +16,7 @@
       --card: #111827;
       --card-inner: #0f172a;
       --border: #1e293b;
-      --text: #f8fafc;
+      --text: #e2e8f0;
       --text-strong: #ffffff;
       --muted: #94a3b8;
       --sky: #38bdf8;
@@ -32,13 +32,14 @@
       --svg-stroke: #cbd5e1;
       --svg-accent: #38bdf8;
       --svg-arrow: #22c55e;
+      --glass-bg: rgba(17, 24, 39, 0.88);
     }
     [data-theme="light"] {
       --bg: #f1f5f9;
       --card: #ffffff;
       --card-inner: #f8fafc;
       --border: #cbd5e1;
-      --text: #1e293b;
+      --text: #334155;
       --text-strong: #0f172a;
       --muted: #64748b;
       --sky: #0284c7;
@@ -54,48 +55,40 @@
       --svg-stroke: #334155;
       --svg-accent: #0284c7;
       --svg-arrow: #16a34a;
+      --glass-bg: rgba(255, 255, 255, 0.90);
     }
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.5;
-      padding: 14px;
-      padding-bottom: 80px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.45;
+      padding: 12px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      padding-bottom: calc(96px + env(safe-area-inset-bottom));
       transition: background-color 0.25s, color 0.25s;
       -webkit-tap-highlight-color: transparent;
     }
-    .container { max-width: 1050px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+    .container { max-width: 1050px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
     .card {
       background-color: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.15);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.14);
       transition: background-color 0.25s, border-color 0.25s;
     }
-    .header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; align-items: center; }
-    .badge {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 9999px;
-      border: 1px solid transparent;
-    }
+
+    /* Header compacto móvil */
+    .header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; align-items: center; }
+    .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 9999px; border: 1px solid transparent; }
     .badge-emerald { background: rgba(34, 197, 94, 0.15); color: var(--emerald); border-color: rgba(34, 197, 94, 0.3); }
     .badge-sky { background: rgba(56, 189, 248, 0.15); color: var(--sky); border-color: rgba(56, 189, 248, 0.3); }
     .badge-offline { background: rgba(168, 85, 247, 0.15); color: #a855f7; border-color: rgba(168, 85, 247, 0.3); }
-    h1 { font-size: 24px; font-weight: 900; letter-spacing: -0.02em; color: var(--text-strong); }
-    .subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    h1 { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; color: var(--text-strong); }
+    .subtitle { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
 
-    .header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
     .theme-btn {
       background: var(--btn-sec-bg);
       color: var(--text-strong);
@@ -109,157 +102,131 @@
       gap: 6px;
     }
 
-    /* Temporizador */
-    .timer-box {
-      background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .timer-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 800; }
-    .timer-display { font-size: 24px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 900; color: var(--sky); min-width: 74px; }
-    .timer-btns { display: flex; gap: 6px; flex-wrap: wrap; }
     button { cursor: pointer; border: none; font-family: inherit; transition: transform 0.1s, opacity 0.15s; }
     button:active { transform: scale(0.95); }
-    .btn-sec {
-      background: var(--btn-sec-bg);
-      color: var(--btn-sec-text);
-      padding: 7px 11px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .btn-primary {
-      background: var(--sky);
-      color: var(--sky-text);
-      padding: 7px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 800;
-    }
+    .btn-sec { background: var(--btn-sec-bg); color: var(--btn-sec-text); padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; }
+    .btn-primary { background: var(--sky); color: var(--sky-text); padding: 9px 14px; border-radius: 10px; font-size: 13px; font-weight: 800; }
+    .btn-emerald { background: var(--emerald); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 13.5px; font-weight: 800; width: 100%; }
 
     /* Historial Semana 1 */
-    .section-title { font-size: 16px; font-weight: 800; color: var(--text-strong); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-    .week-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
-    .day-box {
-      background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    .section-title { font-size: 15px; font-weight: 800; color: var(--text-strong); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .week-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    @media (min-width: 640px) { .week-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; } }
+    .day-box { background: var(--card-inner); border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
     .day-done { border-color: rgba(34, 197, 94, 0.5); background: rgba(34, 197, 94, 0.08); }
     .day-today { border-color: var(--sky); background: rgba(56, 189, 248, 0.12); box-shadow: 0 0 12px rgba(56, 189, 248, 0.15); }
-    .day-name { font-size: 11px; font-weight: 800; text-transform: uppercase; }
-    .day-focus { font-size: 14px; font-weight: 700; color: var(--text-strong); }
+    .day-name { font-size: 10.5px; font-weight: 800; text-transform: uppercase; }
+    .day-focus { font-size: 13px; font-weight: 700; color: var(--text-strong); }
     .day-desc { font-size: 11px; color: var(--muted); }
 
-    /* Tabs */
-    .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    /* Tabs Deslizables en iPhone (1 fila limpia) */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
     .day-tab {
       background: var(--btn-sec-bg);
       color: var(--btn-sec-text);
       border: 1px solid var(--border);
       padding: 9px 14px;
-      border-radius: 12px;
+      border-radius: 9999px;
       font-size: 13px;
       font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    .day-tab.active-tab {
-      background: var(--sky);
-      color: var(--sky-text);
-      border-color: var(--sky);
-      font-weight: 800;
-    }
+    .day-tab.active-tab { background: var(--sky); color: var(--sky-text); border-color: var(--sky); font-weight: 800; }
 
     /* Banner Imagen */
-    .hero-banner {
-      width: 100%;
-      height: 160px;
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-      border: 1px solid var(--border);
-      margin-bottom: 14px;
-      background: #0f172a;
-    }
+    .hero-banner { width: 100%; height: 135px; border-radius: 14px; overflow: hidden; position: relative; border: 1px solid var(--border); margin-bottom: 14px; background: #0f172a; }
+    @media (min-width: 640px) { .hero-banner { height: 165px; } }
     .hero-banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(11, 17, 32, 0.92) 10%, rgba(11, 17, 32, 0.15) 85%);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 16px;
-    }
-    .hero-title { font-size: 18px; font-weight: 800; color: #ffffff; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(11, 17, 32, 0.94) 12%, rgba(11, 17, 32, 0.15) 85%); display: flex; flex-direction: column; justify-content: flex-end; padding: 14px; }
+    .hero-title { font-size: 16.5px; font-weight: 800; color: #ffffff; }
     .hero-sub { font-size: 12px; color: #e2e8f0; }
 
-    /* Tabla */
-    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 660px; }
-    th {
-      padding: 10px 10px;
-      color: var(--muted);
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-      background: var(--th-bg);
-      font-size: 12px;
-    }
-    td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    /* Tabla (iPad/Desktop) vs Tarjetas (iPhone) */
+    .table-wrap { width: 100%; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    th { padding: 10px; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); background: var(--th-bg); font-size: 12px; }
+    td { padding: 11px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     .ex-cell { display: flex; align-items: center; gap: 12px; }
-    .ex-svg-box {
-      width: 58px;
-      height: 58px;
-      min-width: 58px;
-      border-radius: 10px;
-      background: var(--svg-bg);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px;
-    }
+    .ex-svg-box { width: 56px; height: 56px; min-width: 56px; border-radius: 12px; background: var(--svg-bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; padding: 4px; }
     .ex-svg-box svg { width: 100%; height: 100%; }
-    .ex-name { font-weight: 700; color: var(--text-strong); font-size: 13.5px; }
-    .ex-muscle { color: var(--muted); font-size: 11.5px; }
+    .ex-name { font-weight: 700; color: var(--text-strong); font-size: 14px; }
+    .ex-muscle { color: var(--muted); font-size: 12px; }
     .ex-sets { font-family: ui-monospace, monospace; font-weight: 800; color: var(--sky); text-align: center; white-space: nowrap; }
-    .ex-note { color: var(--text); font-size: 12px; line-height: 1.4; }
+    .ex-note { color: var(--text); font-size: 12.5px; line-height: 1.4; }
+
+    /* Inputs optimizados para iOS (16px evita auto-zoom en Safari) */
     .weight-input {
-      width: 68px;
+      width: 74px;
       background: var(--input-bg);
       border: 1px solid var(--border);
       color: var(--text-strong);
-      border-radius: 6px;
-      padding: 5px 6px;
-      font-size: 12px;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 16px;
       text-align: center;
       font-family: ui-monospace, monospace;
+      font-weight: 700;
     }
     .weight-input:focus { outline: none; border-color: var(--sky); }
-    input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--sky); }
+    input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; accent-color: var(--emerald); }
     .hidden { display: none; }
 
-    /* Bitácora */
-    .log-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    /* Transformación Mágica a Tarjetas Nativas en iPhone (<= 680px) */
+    @media (max-width: 680px) {
+      table, thead, tbody, tr, td { display: block; width: 100%; }
+      thead { display: none; }
+      tbody { display: flex; flex-direction: column; gap: 12px; }
+      tr {
+        background: var(--card-inner);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+          "info check"
+          "sets weight"
+          "note note";
+        gap: 10px;
+        align-items: center;
+        transition: border-color 0.2s, background-color 0.2s;
+      }
+      tr.row-completed {
+        border-color: rgba(34, 197, 94, 0.5);
+        background: rgba(34, 197, 94, 0.06);
+      }
+      td { padding: 0; border: none; }
+      td:nth-child(1) { grid-area: info; }
+      td:nth-child(2) { grid-area: sets; text-align: left !important; font-size: 13.5px; }
+      td:nth-child(2)::before { content: "Meta: "; color: var(--muted); font-weight: 600; font-family: inherit; }
+      td:nth-child(3) { grid-area: weight; text-align: right !important; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+      td:nth-child(3)::before { content: "Peso:"; font-size: 12px; color: var(--muted); font-weight: 600; }
+      td:nth-child(4) { grid-area: note; border-top: 1px solid var(--border); padding-top: 8px; font-size: 12px; color: var(--muted); }
+      td:nth-child(5) { grid-area: check; }
+    }
+
+    /* Formularios */
+    .log-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
     .log-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .log-input {
       background: var(--input-bg);
       border: 1px solid var(--border);
       color: var(--text-strong);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 16px;
       flex: 1;
-      min-width: 180px;
+      min-width: 160px;
     }
     .log-list { display: flex; flex-direction: column; gap: 8px; }
     .log-item {
@@ -274,45 +241,54 @@
       color: var(--text-strong);
     }
 
-    /* Info Cards */
-    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-    .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 12px; color: var(--text); }
-    .info-card h4 { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+    /* Catálogo */
+    .catalog-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center; }
+    .filter-chips { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; scrollbar-width: none; }
+    .filter-chips::-webkit-scrollbar { display: none; }
+    .filter-chip { background: var(--btn-sec-bg); color: var(--btn-sec-text); border: 1px solid var(--border); padding: 7px 14px; border-radius: 9999px; font-size: 12.5px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+    .filter-chip.active-chip { background: var(--sky); color: var(--sky-text); border-color: var(--sky); font-weight: 800; }
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .catalog-card { background: var(--card-inner); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+    .catalog-top { display: flex; gap: 12px; align-items: flex-start; }
 
-    /* Catálogo de Ejercicios */
-    .catalog-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center; }
-    .filter-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-    .filter-chip {
-      background: var(--btn-sec-bg);
-      color: var(--btn-sec-text);
-      border: 1px solid var(--border);
-      padding: 6px 12px;
-      border-radius: 9999px;
-      font-size: 12px;
-      font-weight: 600;
+    /* Info Cards */
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+    .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; font-size: 12px; color: var(--text); }
+    .info-card h4 { font-size: 13.5px; font-weight: 800; margin-bottom: 4px; }
+
+    /* Barra Flotante Inferior iOS (Cronómetro + Progreso siempre a la mano) */
+    .floating-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+      padding: 10px 14px;
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      z-index: 50;
+      box-shadow: 0 -8px 25px rgba(0,0,0,0.25);
     }
-    .filter-chip.active-chip {
-      background: var(--sky);
-      color: var(--sky-text);
-      border-color: var(--sky);
-      font-weight: 800;
-    }
-    .catalog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 12px;
-    }
-    .catalog-card {
-      background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
+    .floating-inner {
+      max-width: 1050px;
+      margin: 0 auto;
       display: flex;
-      flex-direction: column;
       justify-content: space-between;
+      align-items: center;
       gap: 10px;
     }
-    .catalog-top { display: flex; gap: 12px; align-items: flex-start; }
+    .progress-pill { display: flex; flex-direction: column; gap: 3px; min-width: 105px; }
+    .progress-text { font-size: 11px; font-weight: 700; color: var(--text-strong); }
+    .progress-track { width: 100%; height: 6px; background: var(--border); border-radius: 9999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--emerald); width: 0%; transition: width 0.3s ease; }
+
+    .float-timer { display: flex; align-items: center; gap: 8px; }
+    .timer-display { font-size: 20px; font-family: ui-monospace, monospace; font-weight: 900; color: var(--sky); min-width: 62px; text-align: center; }
+    .float-btns { display: flex; gap: 5px; }
+    .float-btn-sm { background: var(--btn-sec-bg); color: var(--btn-sec-text); padding: 7px 9px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+    .float-btn-go { background: var(--sky); color: var(--sky-text); padding: 7px 13px; border-radius: 8px; font-size: 12.5px; font-weight: 800; }
   </style>
 </head>
 <body>
@@ -322,68 +298,53 @@
     <header class="card header">
       <div>
         <div class="badges">
-          <span class="badge badge-emerald">Semana 1: Adaptación</span>
-          <span class="badge badge-sky">4 a 5 Días</span>
-          <span class="badge badge-offline" id="offlineStatus">⚡ Modo Offline Activo</span>
+          <span class="badge badge-emerald">Semana 1</span>
+          <span class="badge badge-sky">4–5 Días</span>
+          <span class="badge badge-offline" id="offlineStatus">⚡ Offline Listo</span>
         </div>
-        <h1>🏋️‍♂️ Mi Plan de Entrenamiento</h1>
-        <p class="subtitle">Control con Laura y Yedra • Ilustraciones por ejercicio • Modo Claro/Oscuro</p>
+        <h1>🏋️‍♂️ Mi Plan GYM</h1>
+        <p class="subtitle">Diseñado para iPhone & iPad • Con Laura y Yedra</p>
       </div>
-
       <div class="header-actions">
-        <button onclick="toggleTheme()" id="themeToggleBtn" class="theme-btn">☀️ Modo Claro</button>
-        <div class="timer-box">
-          <div>
-            <div class="timer-label">Descanso</div>
-            <div id="timerDisplay" class="timer-display">01:00</div>
-          </div>
-          <div class="timer-btns">
-            <button onclick="setTimer(60)" class="btn-sec">60s</button>
-            <button onclick="setTimer(90)" class="btn-sec">90s</button>
-            <button onclick="setTimer(120)" class="btn-sec">120s</button>
-            <button id="startTimerBtn" onclick="toggleTimer()" class="btn-primary">▶ Iniciar</button>
-          </div>
-        </div>
+        <button onclick="toggleTheme()" id="themeToggleBtn" class="theme-btn">☀️ Claro</button>
       </div>
     </header>
 
     <!-- Historial Semana 1 -->
     <section class="card">
-      <div class="section-title">
-        <span>📊</span> Historial de esta Semana (Inicio: 10 Nov)
-      </div>
+      <div class="section-title"><span>📊</span> Semana 1 (Inicio: 10 Nov)</div>
       <div class="week-grid">
         <div class="day-box day-done">
-          <span class="day-name" style="color: var(--emerald);">✓ Martes 10 Nov</span>
+          <span class="day-name" style="color: var(--emerald);">✓ Mar 10 Nov</span>
           <span class="day-focus">Pierna General</span>
-          <span class="day-desc">Día 1 completado</span>
+          <span class="day-desc">Completado</span>
         </div>
         <div class="day-box day-done">
-          <span class="day-name" style="color: var(--emerald);">✓ Miércoles 11 Nov</span>
+          <span class="day-name" style="color: var(--emerald);">✓ Mié 11 Nov</span>
           <span class="day-focus">Pecho + Remo</span>
-          <span class="day-desc">Día 2 completado</span>
+          <span class="day-desc">Completado</span>
         </div>
         <div class="day-box day-today">
-          <span class="day-name" style="color: var(--sky);">🔥 Jueves 12 Nov (HOY)</span>
+          <span class="day-name" style="color: var(--sky);">🔥 Jue 12 (HOY)</span>
           <span class="day-focus">Hombro, Brazos & Jalón</span>
-          <span class="day-desc">Descansa pierna y pecho</span>
+          <span class="day-desc">Descansa pierna/pecho</span>
         </div>
         <div class="day-box">
-          <span class="day-name" style="color: var(--muted);">⏳ Viernes 13 Nov</span>
+          <span class="day-name" style="color: var(--muted);">⏳ Vie 13 Nov</span>
           <span class="day-focus">Pierna B (Femoral)</span>
-          <span class="day-desc">Isquios, Glúteo & Gemelos</span>
+          <span class="day-desc">Isquios & Glúteo</span>
         </div>
       </div>
     </section>
 
-    <!-- Pestañas de Días -->
+    <!-- Pestañas Deslizables Horizontales -->
     <div class="tabs">
-      <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab active-tab">🔥 HOY Jueves: Hombro, Brazos & Jalón</button>
+      <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab active-tab">🔥 HOY Jueves</button>
       <button onclick="showDay('piernab')" id="tab-piernab" class="day-tab">⚡ Viernes: Pierna B</button>
       <button onclick="showDay('piernaa')" id="tab-piernaa" class="day-tab">🦵 Sem 2: Pierna A</button>
       <button onclick="showDay('empuje')" id="tab-empuje" class="day-tab">🛡️ Sem 2: Empuje</button>
       <button onclick="showDay('espalda')" id="tab-espalda" class="day-tab">🦅 Sem 2: Espalda</button>
-      <button onclick="showDay('catalogo')" id="tab-catalogo" class="day-tab">📚 Catálogo de Ejercicios</button>
+      <button onclick="showDay('catalogo')" id="tab-catalogo" class="day-tab">📚 Catálogo (24)</button>
     </div>
 
     <!-- Contenido Dinámico -->
@@ -395,19 +356,13 @@
           <img src="./img/espalda_brazos.png" alt="Espalda, Hombros y Brazos" onerror="this.style.display='none'">
           <div class="hero-overlay">
             <div class="hero-title">🔥 Hoy Jueves: Hombros, Brazos & Jalón</div>
-            <div class="hero-sub">Complementa el remo de ayer sin fatigar el pecho y dando 72h de recuperación a piernas.</div>
+            <div class="hero-sub">Completa la espalda de ayer sin fatigar el pecho.</div>
           </div>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
-              <tr>
-                <th>Ejercicio + Guía Visual</th>
-                <th style="text-align:center;">Series x Reps</th>
-                <th style="text-align:center;">Peso (kg)</th>
-                <th>Técnica Clave</th>
-                <th style="text-align:center;">Hecho</th>
-              </tr>
+              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
             </thead>
             <tbody id="tbody-hoy"></tbody>
           </table>
@@ -419,20 +374,14 @@
         <div class="hero-banner">
           <img src="./img/pierna.png" alt="Pierna B" onerror="this.style.display='none'">
           <div class="hero-overlay">
-            <div class="hero-title">⚡ Viernes: Pierna B (Femoral, Glúteo & Gemelos)</div>
-            <div class="hero-sub">Cadena posterior completa tras 72h de recuperación desde el martes.</div>
+            <div class="hero-title">⚡ Viernes: Pierna B (Femoral & Glúteo)</div>
+            <div class="hero-sub">Cadena posterior completa tras 72h de descanso.</div>
           </div>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
-              <tr>
-                <th>Ejercicio + Guía Visual</th>
-                <th style="text-align:center;">Series x Reps</th>
-                <th style="text-align:center;">Peso (kg)</th>
-                <th>Técnica Clave</th>
-                <th style="text-align:center;">Hecho</th>
-              </tr>
+              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
             </thead>
             <tbody id="tbody-piernab"></tbody>
           </table>
@@ -451,13 +400,7 @@
         <div class="table-wrap">
           <table>
             <thead>
-              <tr>
-                <th>Ejercicio + Guía Visual</th>
-                <th style="text-align:center;">Series x Reps</th>
-                <th style="text-align:center;">Peso (kg)</th>
-                <th>Técnica Clave</th>
-                <th style="text-align:center;">Hecho</th>
-              </tr>
+              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
             </thead>
             <tbody id="tbody-piernaa"></tbody>
           </table>
@@ -476,13 +419,7 @@
         <div class="table-wrap">
           <table>
             <thead>
-              <tr>
-                <th>Ejercicio + Guía Visual</th>
-                <th style="text-align:center;">Series x Reps</th>
-                <th style="text-align:center;">Peso (kg)</th>
-                <th>Técnica Clave</th>
-                <th style="text-align:center;">Hecho</th>
-              </tr>
+              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
             </thead>
             <tbody id="tbody-empuje"></tbody>
           </table>
@@ -501,13 +438,7 @@
         <div class="table-wrap">
           <table>
             <thead>
-              <tr>
-                <th>Ejercicio + Guía Visual</th>
-                <th style="text-align:center;">Series x Reps</th>
-                <th style="text-align:center;">Peso (kg)</th>
-                <th>Técnica Clave</th>
-                <th style="text-align:center;">Hecho</th>
-              </tr>
+              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
             </thead>
             <tbody id="tbody-espalda"></tbody>
           </table>
@@ -516,14 +447,10 @@
 
       <!-- CATÁLOGO DE EJERCICIOS -->
       <div id="content-catalogo" class="day-content hidden">
-        <div class="section-title" style="margin-bottom: 6px;">
-          <span>📚</span> Catálogo Completo de Ejercicios (Offline)
-        </div>
-        <p class="subtitle" style="margin-bottom: 14px;">
-          Busca cualquier ejercicio por nombre o grupo muscular, revisa su técnica y envíalo con un clic al día que quieras.
-        </p>
+        <div class="section-title" style="margin-bottom: 4px;"><span>📚</span> Catálogo de Ejercicios</div>
+        <p class="subtitle" style="margin-bottom: 12px;">Busca cualquier ejercicio y envíalo con un toque a tu rutina.</p>
         <div class="catalog-controls">
-          <input type="text" id="catalogSearch" class="log-input" placeholder="🔍 Buscar ejercicio (ej. Remo, Hip Thrust, Fondos...)" oninput="renderCatalog()">
+          <input type="text" id="catalogSearch" class="log-input" placeholder="🔍 Buscar (ej. Hip Thrust, Remo...)" oninput="renderCatalog()">
           <select id="catalogTargetDay" class="log-input" style="max-width: 240px;">
             <option value="hoy">Enviar a: 🔥 HOY Jueves</option>
             <option value="piernab">Enviar a: ⚡ Viernes Pierna B</option>
@@ -538,32 +465,33 @@
           <button onclick="setCatFilter('Espalda', this)" class="filter-chip">Espalda</button>
           <button onclick="setCatFilter('Pierna', this)" class="filter-chip">Pierna & Glúteo</button>
           <button onclick="setCatFilter('Hombro', this)" class="filter-chip">Hombros</button>
-          <button onclick="setCatFilter('Brazos', this)" class="filter-chip">Bíceps & Tríceps</button>
-          <button onclick="setCatFilter('Core', this)" class="filter-chip">Abdomen / Core</button>
+          <button onclick="setCatFilter('Brazos', this)" class="filter-chip">Brazos</button>
+          <button onclick="setCatFilter('Core', this)" class="filter-chip">Core</button>
         </div>
         <div id="catalogGrid" class="catalog-grid"></div>
       </div>
 
-      <!-- Agregar Ejercicio Nuevo al Día Actual -->
-      <div id="customExFormBox" style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
-        <div style="font-size: 13px; font-weight: 800; color: var(--text-strong); margin-bottom: 10px;">
-          ➕ ¿Te pusieron otro ejercicio? Agrégalo a este día:
-        </div>
-        <div class="log-form" style="margin-bottom: 0;">
-          <input type="text" id="newExName" class="log-input" placeholder="Nombre (ej. Pullover en polea)">
-          <input type="text" id="newExMuscle" class="log-input" style="max-width: 160px;" placeholder="Músculo (ej. Dorsal)">
-          <input type="text" id="newExSets" class="log-input" style="max-width: 120px;" placeholder="Series (ej. 3 x 12)">
-          <select id="newExSvg" class="log-input" style="max-width: 170px;">
-            <option value="lat_pulldown">🖼️ Polea / Jalón</option>
-            <option value="bench_press">🖼️ Pecho / Barra</option>
-            <option value="shoulder_press">🖼️ Hombro / Press</option>
-            <option value="bicep_curl">🖼️ Brazos / Mancuerna</option>
-            <option value="leg_press">🖼️ Pierna / Prensa</option>
-            <option value="rdl">🖼️ Peso Muerto / Femoral</option>
-            <option value="plank">🖼️ Abdomen / Core</option>
-          </select>
-          <input type="text" id="newExNote" class="log-input" placeholder="Nota técnica (opcional)">
-          <button onclick="addCustomExercise()" class="btn-primary">+ Agregar a este Día</button>
+      <!-- Acciones del Día + Agregar Ejercicio -->
+      <div id="customExFormBox" style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px;">
+        <button onclick="finishWorkout()" class="btn-emerald">✅ Finalizar Entreno de Hoy (Guardar en Bitácora y Limpiar Checks)</button>
+        <div>
+          <div style="font-size: 13px; font-weight: 800; color: var(--text-strong); margin-bottom: 8px;">➕ ¿Te pusieron otro ejercicio? Agrégalo aquí:</div>
+          <div class="log-form" style="margin-bottom: 0;">
+            <input type="text" id="newExName" class="log-input" placeholder="Nombre (ej. Pullover polea)">
+            <input type="text" id="newExMuscle" class="log-input" style="max-width: 150px;" placeholder="Músculo">
+            <input type="text" id="newExSets" class="log-input" style="max-width: 120px;" placeholder="3 x 12">
+            <select id="newExSvg" class="log-input" style="max-width: 170px;">
+              <option value="lat_pulldown">🖼️ Polea / Jalón</option>
+              <option value="bench_press">🖼️ Pecho / Barra</option>
+              <option value="shoulder_press">🖼️ Hombro / Press</option>
+              <option value="bicep_curl">🖼️ Brazos / Mancuerna</option>
+              <option value="leg_press">🖼️ Pierna / Prensa</option>
+              <option value="rdl">🖼️ Peso Muerto / Femoral</option>
+              <option value="plank">🖼️ Abdomen / Core</option>
+            </select>
+            <input type="text" id="newExNote" class="log-input" placeholder="Nota técnica (opcional)">
+            <button onclick="addCustomExercise()" class="btn-primary">+ Agregar</button>
+          </div>
         </div>
       </div>
 
@@ -572,14 +500,12 @@
     <!-- Bitácora Personal -->
     <section class="card">
       <div class="log-header">
-        <div class="section-title" style="margin-bottom:0;">
-          <span>📝</span> Mi Bitácora de Entrenamientos
-        </div>
-        <button onclick="restoreDefaultLogs()" class="btn-sec">↺ Restaurar Semana 1</button>
+        <div class="section-title" style="margin-bottom:0;"><span>📝</span> Bitácora</div>
+        <button onclick="restoreDefaultLogs()" class="btn-sec" style="font-size:12px;">↺ Restaurar Semana 1</button>
       </div>
       <div class="log-form">
-        <input type="text" id="logText" class="log-input" placeholder="Ej: Jueves 12 Nov - Hombro y Brazos con Laura (Press 10kg)...">
-        <button onclick="addLog()" class="btn-primary">+ Guardar Sesión</button>
+        <input type="text" id="logText" class="log-input" placeholder="Nota rápida de entrenamiento...">
+        <button onclick="addLog()" class="btn-primary">+ Guardar</button>
       </div>
       <div id="logList" class="log-list"></div>
     </section>
@@ -588,22 +514,39 @@
     <div class="info-grid">
       <div class="info-card">
         <h4 style="color: var(--amber);">🎯 Regla RIR 2 (Semanas 1–3)</h4>
-        <p>Elige un peso con el que sientas que podías hacer <strong>2 repeticiones más</strong> limpias al terminar la serie.</p>
+        <p>Termina cada serie sintiendo que podías hacer <strong>2 repeticiones más</strong> limpias.</p>
       </div>
       <div class="info-card">
         <h4 style="color: var(--sky);">⏳ Tempo Controlado 2-0-2</h4>
-        <p>Tarda 2 segundos en bajar el peso y 2 segundos en subirlo sin impulsarte.</p>
+        <p>2 segundos en bajar el peso controlado y 2 segundos en subir.</p>
       </div>
       <div class="info-card">
-        <h4 style="color: var(--emerald);">✈️ 100% Sin Conexión (PWA)</h4>
-        <p>Toda la app, sus ilustraciones SVG, cronómetro y pesos funcionan sin internet en tu iPad.</p>
+        <h4 style="color: var(--emerald);">🔊 Alerta Sonora + Offline</h4>
+        <p>Al terminar el descanso suena un doble tono y la app funciona sin señal.</p>
       </div>
     </div>
 
   </div>
 
+  <!-- Barra Flotante Inferior iOS (Siempre visible en iPhone) -->
+  <div class="floating-bar">
+    <div class="floating-inner">
+      <div class="progress-pill">
+        <div class="progress-text" id="progressText">0 / 0 listos</div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <div class="float-timer">
+        <div id="timerDisplay" class="timer-display">01:00</div>
+        <div class="float-btns">
+          <button onclick="setTimer(60)" class="float-btn-sm">60s</button>
+          <button onclick="setTimer(90)" class="float-btn-sm">90s</button>
+          <button id="startTimerBtn" onclick="toggleTimer()" class="float-btn-go">▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Librería de Ilustraciones SVG Vectoriales (Offline 100%)
     const SVGS = {
       lat_pulldown: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="12" x2="52" y2="12" stroke="var(--svg-accent)" stroke-width="3"/><line x1="32" y1="4" x2="32" y2="12" stroke="var(--svg-accent)"/><circle cx="32" cy="24" r="5"/><path d="M18 12 L24 30 L40 30 L46 12"/><line x1="32" y1="30" x2="32" y2="48"/><path d="M22 48 L42 48 L44 58" /><path d="M32 16 L32 21" stroke="var(--svg-arrow)" stroke-width="2"/><path d="M29 19 L32 22 L35 19" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
       shoulder_press: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="22" r="5"/><path d="M22 32 L32 29 L42 32 L42 46 L22 46 Z"/><rect x="12" y="14" width="10" height="5" rx="2" fill="var(--svg-accent)" stroke="none"/><rect x="42" y="14" width="10" height="5" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M17 19 L17 30 L22 32"/><path d="M47 19 L47 30 L42 32"/><path d="M17 11 L17 7 M14 9 L17 6 L20 9" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
@@ -625,49 +568,56 @@
       db_row: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="42" x2="48" y2="42" stroke="var(--muted)" stroke-width="3"/><circle cx="44" cy="24" r="4.5"/><path d="M40 28 L20 32 L20 42"/><path d="M20 32 L18 54"/><path d="M36 29 L36 46"/><rect x="31" y="46" width="10" height="5" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M44 42 L44 33 M41 36 L44 32 L47 36" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`
     };
 
+    const DAY_LABELS = {
+      hoy: 'Jueves (Hombro/Brazos/Jalón)',
+      piernab: 'Viernes (Pierna B)',
+      piernaa: 'Pierna A',
+      empuje: 'Torso Empuje',
+      espalda: 'Espalda & Bíceps'
+    };
+
     const ROUTINES = {
       hoy: [
-        { id: 'hoy-1', svg: 'lat_pulldown', name: '1. Jalón al Pecho en Polea', muscle: 'Dorsal Ancho (Completa espalda de ayer)', sets: '4 x 10–12', note: 'Agarre neutro o abierto, jala llevando los codos hacia las costillas sacando pecho.' },
-        { id: 'hoy-2', svg: 'shoulder_press', name: '2. Press Militar c/ Mancuernas', muscle: 'Hombro Anterior / Medio', sets: '3 x 10–12', note: 'Sentado casi recto. Baja las mancuernas a la altura de tus orejas.' },
-        { id: 'hoy-3', svg: 'lateral_raise', name: '3. Elevaciones Laterales', muscle: 'Deltoides Lateral', sets: '4 x 12–15', note: 'Peso moderado. Sube sin encoger el cuello, codos semi-flexionados.' },
-        { id: 'hoy-4', svg: 'face_pull', name: '4. Face Pull en Polea Alta', muscle: 'Hombro Posterior & Postura', sets: '3 x 15', note: 'Jala la cuerda hacia tu frente separando las manos al final.' },
-        { id: 'hoy-5', svg: 'bicep_curl', name: '5. Curl de Bíceps Barra Z / Manc.', muscle: 'Bíceps Braquial', sets: '3 x 10–12', note: 'Codos fijos pegados al costado, sin columpiar la espalda.' },
-        { id: 'hoy-6', svg: 'tricep_rope', name: '6. Extensión Tríceps Polea (Cuerda)', muscle: 'Tríceps', sets: '3 x 12–15', note: 'Abre la cuerda hacia afuera abajo y controla la subida.' },
-        { id: 'hoy-7', svg: 'plank', name: '7. Plancha Abdominal', muscle: 'Core Profundo', sets: '3 x 35–45s', note: 'Aprieta abdomen y glúteos manteniendo la espalda recta.' }
+        { id: 'hoy-1', svg: 'lat_pulldown', name: '1. Jalón al Pecho en Polea', muscle: 'Dorsal Ancho', sets: '4 x 10–12', note: 'Agarre neutro o abierto, jala llevando los codos hacia las costillas.' },
+        { id: 'hoy-2', svg: 'shoulder_press', name: '2. Press Militar Mancuernas', muscle: 'Hombro Anterior', sets: '3 x 10–12', note: 'Sentado casi recto. Baja a la altura de tus orejas.' },
+        { id: 'hoy-3', svg: 'lateral_raise', name: '3. Elevaciones Laterales', muscle: 'Deltoides Lateral', sets: '4 x 12–15', note: 'Peso moderado. Sube sin encoger el cuello.' },
+        { id: 'hoy-4', svg: 'face_pull', name: '4. Face Pull en Polea Alta', muscle: 'Hombro Posterior', sets: '3 x 15', note: 'Jala la cuerda hacia tu frente separando las manos.' },
+        { id: 'hoy-5', svg: 'bicep_curl', name: '5. Curl de Bíceps Barra Z', muscle: 'Bíceps Braquial', sets: '3 x 10–12', note: 'Codos fijos pegados al costado, sin columpiar.' },
+        { id: 'hoy-6', svg: 'tricep_rope', name: '6. Extensión Tríceps Cuerda', muscle: 'Tríceps', sets: '3 x 12–15', note: 'Abre la cuerda hacia afuera abajo y controla subida.' },
+        { id: 'hoy-7', svg: 'plank', name: '7. Plancha Abdominal', muscle: 'Core Profundo', sets: '3 x 35–45s', note: 'Aprieta abdomen y glúteos manteniendo espalda recta.' }
       ],
       piernab: [
-        { id: 'pb-1', svg: 'rdl', name: '1. Peso Muerto Rumano c/ Manc.', muscle: 'Isquiotibiales y Glúteo', sets: '4 x 10–12', note: 'Rodillas semi-flexionadas fijas. Empuja la cadera atrás sintiendo el estirón femoral.' },
-        { id: 'pb-2', svg: 'leg_curl', name: '2. Curl Femoral Sentado/Acostado', muscle: 'Isquios Aislados', sets: '4 x 10–12', note: 'Frena el regreso del peso en 2 segundos completos.' },
-        { id: 'pb-3', svg: 'leg_press', name: '3. Prensa (Pies altos y separados)', muscle: 'Glúteo y Aductores', sets: '3 x 12', note: 'Poner los pies arriba en la plataforma enfoca el esfuerzo en glúteos e isquios.' },
-        { id: 'pb-4', svg: 'lunges', name: '4. Zancadas / Desplantes Estáticos', muscle: 'Pierna Global', sets: '3 x 10 c/ lado', note: 'Paso largo y controlado, baja verticalmente sin golpear la rodilla.' },
-        { id: 'pb-5', svg: 'calf_raise', name: '5. Elevación de Talones (Gemelos)', muscle: 'Pantorrilla', sets: '4 x 15', note: 'Pausa de 1 seg arriba y estiramiento completo abajo.' }
+        { id: 'pb-1', svg: 'rdl', name: '1. Peso Muerto Rumano', muscle: 'Isquios y Glúteo', sets: '4 x 10–12', note: 'Rodillas semi-fijas. Empuja la cadera atrás sintiendo estirón femoral.' },
+        { id: 'pb-2', svg: 'leg_curl', name: '2. Curl Femoral Máquina', muscle: 'Isquios Aislados', sets: '4 x 10–12', note: 'Frena el regreso del peso en 2 segundos completos.' },
+        { id: 'pb-3', svg: 'leg_press', name: '3. Prensa (Pies altos)', muscle: 'Glúteo y Aductores', sets: '3 x 12', note: 'Pies arriba en la plataforma para enfocar glúteos e isquios.' },
+        { id: 'pb-4', svg: 'lunges', name: '4. Zancadas / Desplantes', muscle: 'Pierna Global', sets: '3 x 10 c/ lado', note: 'Paso largo y controlado, baja verticalmente.' },
+        { id: 'pb-5', svg: 'calf_raise', name: '5. Gemelos en Máquina', muscle: 'Pantorrilla', sets: '4 x 15', note: 'Pausa de 1 seg arriba y estiramiento completo abajo.' }
       ],
       piernaa: [
-        { id: 'pa-1', svg: 'leg_press', name: '1. Prensa de Piernas 45°', muscle: 'Cuádriceps / Glúteo', sets: '4 x 10–12', note: 'Pies al centro a anchura de hombros. No despegues la espalda baja.' },
-        { id: 'pa-2', svg: 'leg_ext', name: '2. Extensión de Cuádriceps', muscle: 'Cuádriceps Aislados', sets: '3 x 12–15', note: '1 seg de contracción arriba.' },
-        { id: 'pa-3', svg: 'goblet_squat', name: '3. Sentadilla Goblet c/ Mancuerna', muscle: 'Pierna Global y Core', sets: '3 x 10–12', note: 'Torso vertical, profundidad cómoda.' },
+        { id: 'pa-1', svg: 'leg_press', name: '1. Prensa de Piernas 45°', muscle: 'Cuádriceps / Glúteo', sets: '4 x 10–12', note: 'Pies al centro anchura hombros. No despegues espalda baja.' },
+        { id: 'pa-2', svg: 'leg_ext', name: '2. Extensión Cuádriceps', muscle: 'Cuádriceps', sets: '3 x 12–15', note: '1 seg de contracción arriba.' },
+        { id: 'pa-3', svg: 'goblet_squat', name: '3. Sentadilla Goblet', muscle: 'Pierna y Core', sets: '3 x 10–12', note: 'Torso vertical, profundidad cómoda.' },
         { id: 'pa-4', svg: 'leg_curl', name: '4. Curl Femoral Acostado', muscle: 'Femoral', sets: '3 x 12', note: 'Controla la bajada.' },
         { id: 'pa-5', svg: 'calf_raise', name: '5. Gemelos en Máquina', muscle: 'Pantorrilla', sets: '4 x 15', note: 'Sin rebotar.' }
       ],
       empuje: [
         { id: 'em-1', svg: 'bench_press', name: '1. Press de Banca Plano', muscle: 'Pectoral Mayor', sets: '4 x 10–12', note: 'Escápulas retraídas, codos a 45°.' },
-        { id: 'em-2', svg: 'bench_press', name: '2. Press Inclinado c/ Mancuernas', muscle: 'Pecho Superior', sets: '3 x 10–12', note: 'Banco a 30°. Controla el descenso.' },
+        { id: 'em-2', svg: 'bench_press', name: '2. Press Inclinado Manc.', muscle: 'Pecho Superior', sets: '3 x 10–12', note: 'Banco a 30°. Controla el descenso.' },
         { id: 'em-3', svg: 'pec_deck', name: '3. Pec-Deck / Aperturas', muscle: 'Pecho Aislamiento', sets: '3 x 12–15', note: 'Aprieta 1 seg al juntar brazos.' },
-        { id: 'em-4', svg: 'shoulder_press', name: '4. Press Militar Mancuernas', muscle: 'Hombro', sets: '3 x 10–12', note: 'No choques las mancuernas arriba.' },
+        { id: 'em-4', svg: 'shoulder_press', name: '4. Press Militar Manc.', muscle: 'Hombro', sets: '3 x 10–12', note: 'No choques las mancuernas arriba.' },
         { id: 'em-5', svg: 'lateral_raise', name: '5. Elevaciones Laterales', muscle: 'Hombro Lateral', sets: '4 x 12–15', note: 'Movimiento limpio sin impulso.' },
-        { id: 'em-6', svg: 'tricep_rope', name: '6. Extensión Tríceps Polea', muscle: 'Tríceps', sets: '3 x 12–15', note: 'Codos pegados a costados.' }
+        { id: 'em-6', svg: 'tricep_rope', name: '6. Extensión Tríceps', muscle: 'Tríceps', sets: '3 x 12–15', note: 'Codos pegados a costados.' }
       ],
       espalda: [
-        { id: 'es-1', svg: 'lat_pulldown', name: '1. Jalón al Pecho en Polea', muscle: 'Dorsales', sets: '4 x 10–12', note: 'Codos hacia el suelo sacando el pecho.' },
-        { id: 'es-2', svg: 'cable_row', name: '2. Remo en Polea Baja (V)', muscle: 'Espalda Media', sets: '4 x 10–12', note: 'Junta escápulas 1 seg atrás.' },
-        { id: 'es-3', svg: 'db_row', name: '3. Remo Unilateral c/ Mancuerna', muscle: 'Dorsal', sets: '3 x 10–12', note: 'Apoyado en banco, jala hacia la cadera.' },
+        { id: 'es-1', svg: 'lat_pulldown', name: '1. Jalón al Pecho Polea', muscle: 'Dorsales', sets: '4 x 10–12', note: 'Codos hacia el suelo sacando el pecho.' },
+        { id: 'es-2', svg: 'cable_row', name: '2. Remo Polea Baja (V)', muscle: 'Espalda Media', sets: '4 x 10–12', note: 'Junta escápulas 1 seg atrás.' },
+        { id: 'es-3', svg: 'db_row', name: '3. Remo Unilateral Manc.', muscle: 'Dorsal', sets: '3 x 10–12', note: 'Apoyado en banco, jala hacia la cadera.' },
         { id: 'es-4', svg: 'face_pull', name: '4. Face Pull', muscle: 'Hombro Posterior', sets: '3 x 15', note: 'Cuerda hacia la frente.' },
         { id: 'es-5', svg: 'bicep_curl', name: '5. Curl Bíceps Barra Z', muscle: 'Bíceps', sets: '3 x 10–12', note: 'Sin balancear la espalda.' },
-        { id: 'es-6', svg: 'bicep_curl', name: '6. Curl Martillo Mancuernas', muscle: 'Braquial / Antebrazo', sets: '3 x 12', note: 'Agarre neutro.' }
+        { id: 'es-6', svg: 'bicep_curl', name: '6. Curl Martillo Manc.', muscle: 'Braquial / Antebrazo', sets: '3 x 12', note: 'Agarre neutro.' }
       ]
     };
 
-    // Ejercicios Personalizados por Día (Guardado Local)
     let customExercises = JSON.parse(localStorage.getItem('gym_custom_exercises')) || {};
     let currentDayId = localStorage.getItem('gym_active_tab') || 'hoy';
 
@@ -679,7 +629,9 @@
         const list = [...ROUTINES[dayKey], ...(customExercises[dayKey] || [])];
         list.forEach(ex => {
           const tr = document.createElement('tr');
-          const delBtn = ex.isCustom ? `<button onclick="deleteCustomExercise('${dayKey}', '${ex.id}')" class="btn-sec" style="padding: 2px 6px; font-size: 11px; margin-left: 6px;" title="Eliminar">✕</button>` : '';
+          const isChecked = localStorage.getItem('gym_c_' + ex.id) === 'true';
+          if (isChecked) tr.classList.add('row-completed');
+          const delBtn = ex.isCustom ? `<button onclick="deleteCustomExercise('${dayKey}', '${ex.id}')" class="btn-sec" style="padding: 2px 7px; font-size: 11px; margin-left: 6px;">✕</button>` : '';
           tr.innerHTML = `
             <td>
               <div class="ex-cell">
@@ -691,7 +643,7 @@
               </div>
             </td>
             <td class="ex-sets">${ex.sets || '3 x 12'}</td>
-            <td style="text-align:center;"><input type="text" class="weight-input" data-key="${ex.id}" placeholder="kg"></td>
+            <td style="text-align:center;"><input type="text" inputmode="decimal" class="weight-input" data-key="${ex.id}" placeholder="0"></td>
             <td class="ex-note">${ex.note || 'Agregado manualmente'}</td>
             <td style="text-align:center;"><input type="checkbox" data-chk="${ex.id}"></td>
           `;
@@ -699,6 +651,63 @@
         });
       });
       bindInputs();
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const textEl = document.getElementById('progressText');
+      const fillEl = document.getElementById('progressFill');
+      if (currentDayId === 'catalogo') {
+        textEl.innerText = 'Catálogo (24)';
+        fillEl.style.width = '100%';
+        return;
+      }
+      const tbody = document.getElementById('tbody-' + currentDayId);
+      if (!tbody) return;
+      const chks = tbody.querySelectorAll('input[type="checkbox"]');
+      const total = chks.length;
+      const done = Array.from(chks).filter(c => c.checked).length;
+      textEl.innerText = `${done} / ${total} listos`;
+      fillEl.style.width = total > 0 ? `${Math.round((done / total) * 100)}%` : '0%';
+    }
+
+    function bindInputs() {
+      document.querySelectorAll('.weight-input').forEach(input => {
+        const key = 'gym_w_' + input.dataset.key;
+        input.value = localStorage.getItem(key) || '';
+        input.addEventListener('input', () => localStorage.setItem(key, input.value));
+      });
+      document.querySelectorAll('input[type="checkbox"][data-chk]').forEach(chk => {
+        const key = 'gym_c_' + chk.dataset.chk;
+        chk.checked = localStorage.getItem(key) === 'true';
+        chk.addEventListener('change', () => {
+          localStorage.setItem(key, chk.checked);
+          const tr = chk.closest('tr');
+          if (tr) tr.classList.toggle('row-completed', chk.checked);
+          updateProgress();
+        });
+      });
+    }
+
+    function finishWorkout() {
+      const tbody = document.getElementById('tbody-' + currentDayId);
+      if (!tbody) return;
+      const chks = tbody.querySelectorAll('input[type="checkbox"]');
+      const done = Array.from(chks).filter(c => c.checked).length;
+      if (done === 0) return alert('Marca al menos 1 ejercicio completado antes de finalizar.');
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
+      const label = DAY_LABELS[currentDayId] || currentDayId;
+      logs.unshift({ id: Date.now(), text: `✅ ${dateStr} — ${label} (${done}/${chks.length} ejercicios)` });
+      localStorage.setItem('gym_logs', JSON.stringify(logs));
+      chks.forEach(c => {
+        c.checked = false;
+        localStorage.setItem('gym_c_' + c.dataset.chk, 'false');
+        c.closest('tr')?.classList.remove('row-completed');
+      });
+      renderLogs();
+      updateProgress();
+      alert('¡Sesión guardada en tu Bitácora! Tus pesos en kg se mantuvieron guardados.');
     }
 
     function addCustomExercise() {
@@ -707,18 +716,9 @@
       const muscle = document.getElementById('newExMuscle').value.trim() || 'Extra';
       const sets = document.getElementById('newExSets').value.trim() || '3 x 12';
       const svg = document.getElementById('newExSvg').value;
-      const note = document.getElementById('newExNote').value.trim() || 'Ejercicio agregado en sesión.';
-
+      const note = document.getElementById('newExNote').value.trim() || 'Agregado en sesión.';
       if (!customExercises[currentDayId]) customExercises[currentDayId] = [];
-      customExercises[currentDayId].push({
-        id: 'cust-' + Date.now(),
-        svg,
-        name: '⭐ ' + name,
-        muscle,
-        sets,
-        note,
-        isCustom: true
-      });
+      customExercises[currentDayId].push({ id: 'cust-' + Date.now(), svg, name: '⭐ ' + name, muscle, sets, note, isCustom: true });
       localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercises));
       document.getElementById('newExName').value = '';
       document.getElementById('newExMuscle').value = '';
@@ -734,73 +734,55 @@
       renderAllTables();
     }
 
-    function bindInputs() {
-      document.querySelectorAll('.weight-input').forEach(input => {
-        const key = 'gym_w_' + input.dataset.key;
-        input.value = localStorage.getItem(key) || '';
-        input.addEventListener('input', () => localStorage.setItem(key, input.value));
-      });
-      document.querySelectorAll('input[type="checkbox"][data-chk]').forEach(chk => {
-        const key = 'gym_c_' + chk.dataset.chk;
-        chk.checked = localStorage.getItem(key) === 'true';
-        chk.addEventListener('change', () => localStorage.setItem(key, chk.checked));
-      });
-    }
-
-    // Tema Light / Dark
     function applyTheme(theme) {
       const btn = document.getElementById('themeToggleBtn');
       if (theme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
-        btn.innerText = '🌙 Modo Oscuro';
+        btn.innerText = '🌙 Oscuro';
       } else {
         document.documentElement.removeAttribute('data-theme');
-        btn.innerText = '☀️ Modo Claro';
+        btn.innerText = '☀️ Claro';
       }
       localStorage.setItem('gym_theme', theme);
     }
     function toggleTheme() {
-      const current = localStorage.getItem('gym_theme') === 'light' ? 'dark' : 'light';
-      applyTheme(current);
+      applyTheme(localStorage.getItem('gym_theme') === 'light' ? 'dark' : 'light');
     }
     applyTheme(localStorage.getItem('gym_theme') || 'dark');
 
-    // Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then(() => {
-          document.getElementById('offlineStatus').innerText = '⚡ Modo Offline Activo';
-        }).catch(() => {});
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
       });
     }
 
-    // Pestañas
     function showDay(dayId) {
       currentDayId = dayId;
       document.querySelectorAll('.day-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.day-tab').forEach(el => el.classList.remove('active-tab'));
       document.getElementById('content-' + dayId)?.classList.remove('hidden');
-      document.getElementById('tab-' + dayId)?.classList.add('active-tab');
+      const tab = document.getElementById('tab-' + dayId);
+      if (tab) {
+        tab.classList.add('active-tab');
+        tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
       const formBox = document.getElementById('customExFormBox');
-      if (formBox) formBox.style.display = (dayId === 'catalogo') ? 'none' : 'block';
+      if (formBox) formBox.style.display = (dayId === 'catalogo') ? 'none' : 'flex';
       localStorage.setItem('gym_active_tab', dayId);
+      updateProgress();
     }
     if (currentDayId && document.getElementById('content-' + currentDayId)) showDay(currentDayId);
     renderAllTables();
 
-    // Catálogo de Ejercicios Offline (24 Ejercicios Clave)
     const CATALOG = [
-      // Pecho
       { cat: 'Pecho', svg: 'bench_press', name: 'Press de Banca Plano', muscle: 'Pectoral Mayor', sets: '4 x 10–12', note: 'Retrae escápulas y baja controlado al centro del pecho.' },
       { cat: 'Pecho', svg: 'bench_press', name: 'Press Inclinado Mancuernas (30°)', muscle: 'Pectoral Superior', sets: '3 x 10–12', note: 'Inclinación moderada para enfocar la parte alta del pecho.' },
       { cat: 'Pecho', svg: 'pec_deck', name: 'Aperturas en Pec-Deck / Máquina', muscle: 'Pectoral (Aislamiento)', sets: '3 x 12–15', note: 'Junta brazos al frente sin encoger los hombros.' },
       { cat: 'Pecho', svg: 'pec_deck', name: 'Cruces en Polea Alta (Crossover)', muscle: 'Pecho Inferior / Medio', sets: '3 x 12–15', note: 'Inclina ligeramente el torso y cruza manos abajo.' },
-      // Espalda
       { cat: 'Espalda', svg: 'lat_pulldown', name: 'Jalón al Pecho (Agarre Ancho/Neutro)', muscle: 'Dorsal Ancho', sets: '4 x 10–12', note: 'Lleva los codos hacia abajo y saca el pecho.' },
       { cat: 'Espalda', svg: 'cable_row', name: 'Remo en Polea Baja (Agarre V)', muscle: 'Espalda Media', sets: '4 x 10–12', note: 'Junta los omóplatos 1 segundo atrás en cada repetición.' },
       { cat: 'Espalda', svg: 'db_row', name: 'Remo Unilateral c/ Mancuerna', muscle: 'Dorsal Unilateral', sets: '3 x 10–12', note: 'Apóyate en un banco y sube el codo hacia tu cadera.' },
       { cat: 'Espalda', svg: 'lat_pulldown', name: 'Pullover en Polea Alta (Cuerda/Barra)', muscle: 'Dorsales y Serrato', sets: '3 x 12–15', note: 'Brazos semi-rectos, baja la barra hasta los muslos.' },
-      // Pierna
       { cat: 'Pierna', svg: 'leg_press', name: 'Prensa de Piernas 45°', muscle: 'Cuádriceps y Glúteo', sets: '4 x 10–12', note: 'Pies medios para cuádriceps; pies altos para glúteo/femoral.' },
       { cat: 'Pierna', svg: 'goblet_squat', name: 'Sentadilla Goblet c/ Mancuerna', muscle: 'Pierna General y Core', sets: '3 x 10–12', note: 'Mancuerna pegada al pecho y espalda bien recta.' },
       { cat: 'Pierna', svg: 'leg_ext', name: 'Extensión de Cuádriceps en Máquina', muscle: 'Cuádriceps Aislados', sets: '3 x 12–15', note: 'Aguanta 1 segundo arriba contrayendo fuerte.' },
@@ -809,16 +791,13 @@
       { cat: 'Pierna', svg: 'lunges', name: 'Zancadas / Desplantes c/ Mancuernas', muscle: 'Pierna Global & Glúteo', sets: '3 x 10 c/ lado', note: 'Paso largo y controlado, rodilla trasera casi toca el suelo.' },
       { cat: 'Pierna', svg: 'leg_press', name: 'Hip Thrust / Puente de Glúteo', muscle: 'Glúteo Mayor', sets: '3 x 10–12', note: 'Aprieta los glúteos 1 segundo arriba con mirada al frente.' },
       { cat: 'Pierna', svg: 'calf_raise', name: 'Elevación de Talones (Gemelos)', muscle: 'Pantorrilla', sets: '4 x 15', note: 'Rango completo arriba y abajo, sin rebotar.' },
-      // Hombro
       { cat: 'Hombro', svg: 'shoulder_press', name: 'Press Militar c/ Mancuernas', muscle: 'Deltoides Anterior / Medio', sets: '3 x 10–12', note: 'Baja a la altura de las orejas y sube controlado.' },
       { cat: 'Hombro', svg: 'lateral_raise', name: 'Elevaciones Laterales (Manc. o Polea)', muscle: 'Deltoides Lateral', sets: '4 x 12–15', note: 'Sube hasta la altura de los hombros sin encoger el cuello.' },
       { cat: 'Hombro', svg: 'face_pull', name: 'Face Pull en Polea Alta', muscle: 'Hombro Posterior / Manguito', sets: '3 x 15', note: 'Jala la cuerda hacia tu frente separando las manos.' },
-      // Brazos
       { cat: 'Brazos', svg: 'bicep_curl', name: 'Curl de Bíceps Barra Z o Mancuernas', muscle: 'Bíceps Braquial', sets: '3 x 10–12', note: 'Codos pegados al cuerpo sin balancear la espalda.' },
       { cat: 'Brazos', svg: 'bicep_curl', name: 'Curl Martillo con Mancuernas', muscle: 'Braquial y Antebrazo', sets: '3 x 12', note: 'Palmas viéndose entre sí (agarre neutro).' },
       { cat: 'Brazos', svg: 'tricep_rope', name: 'Extensión de Tríceps en Polea (Cuerda)', muscle: 'Tríceps', sets: '3 x 12–15', note: 'Abre la cuerda abajo manteniendo los codos fijos.' },
       { cat: 'Brazos', svg: 'tricep_rope', name: 'Press Francés c/ Mancuernas o Barra Z', muscle: 'Tríceps (Cabeza Larga)', sets: '3 x 10–12', note: 'Baja controlado detrás de la frente/cabeza.' },
-      // Core
       { cat: 'Core', svg: 'plank', name: 'Plancha Abdominal / Elevación Piernas', muscle: 'Core y Abdomen', sets: '3 x 35–45s', note: 'Aprieta abdomen y glúteos manteniendo postura neutra.' }
     ];
 
@@ -835,12 +814,10 @@
       if (!grid) return;
       const query = (document.getElementById('catalogSearch')?.value || '').toLowerCase();
       grid.innerHTML = '';
-
       CATALOG.forEach((item, idx) => {
         const matchCat = activeCatFilter === 'Todos' || item.cat === activeCatFilter;
         const matchSearch = !query || item.name.toLowerCase().includes(query) || item.muscle.toLowerCase().includes(query) || item.cat.toLowerCase().includes(query);
         if (!matchCat || !matchSearch) return;
-
         const card = document.createElement('div');
         card.className = 'catalog-card';
         card.innerHTML = `
@@ -853,7 +830,7 @@
             </div>
           </div>
           <p class="ex-note">${item.note}</p>
-          <button onclick="addFromCatalog(${idx}, this)" class="btn-primary" style="width:100%; text-align:center;">+ Agregar al día seleccionado</button>
+          <button onclick="addFromCatalog(${idx}, this)" class="btn-primary" style="width:100%; text-align:center;">+ Agregar al día</button>
         `;
         grid.appendChild(card);
       });
@@ -863,28 +840,16 @@
       const item = CATALOG[idx];
       const targetDay = document.getElementById('catalogTargetDay').value;
       if (!customExercises[targetDay]) customExercises[targetDay] = [];
-      customExercises[targetDay].push({
-        id: 'cat-' + Date.now() + '-' + idx,
-        svg: item.svg,
-        name: '⭐ ' + item.name,
-        muscle: item.muscle,
-        sets: item.sets,
-        note: item.note,
-        isCustom: true
-      });
+      customExercises[targetDay].push({ id: 'cat-' + Date.now() + '-' + idx, svg: item.svg, name: '⭐ ' + item.name, muscle: item.muscle, sets: item.sets, note: item.note, isCustom: true });
       localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercises));
       renderAllTables();
       const orig = btn.innerText;
       btn.innerText = '✓ Agregado';
       btn.style.background = 'var(--emerald)';
-      setTimeout(() => {
-        btn.innerText = orig;
-        btn.style.background = 'var(--sky)';
-      }, 1200);
+      setTimeout(() => { btn.innerText = orig; btn.style.background = 'var(--sky)'; }, 1200);
     }
     renderCatalog();
 
-    // Bitácora con botón de restauración
     const defaultLogs = [
       { id: 101, text: '✅ Mar 10 Nov — Pierna general (Día 1 inicio)' },
       { id: 102, text: '✅ Mié 11 Nov — Pecho y Espalda (Remo)' }
@@ -901,11 +866,10 @@
       logs.forEach(item => {
         const div = document.createElement('div');
         div.className = 'log-item';
-        div.innerHTML = `<span>${item.text}</span><button onclick="deleteLog(${item.id})" class="btn-sec" style="padding: 3px 8px; font-size: 11px;">✕</button>`;
+        div.innerHTML = `<span>${item.text}</span><button onclick="deleteLog(${item.id})" class="btn-sec" style="padding: 4px 8px; font-size: 11px;">✕</button>`;
         list.appendChild(div);
       });
     }
-
     function addLog() {
       const input = document.getElementById('logText');
       const val = input.value.trim();
@@ -915,24 +879,42 @@
       input.value = '';
       renderLogs();
     }
-
     function deleteLog(id) {
       logs = logs.filter(l => l.id !== id);
       localStorage.setItem('gym_logs', JSON.stringify(logs));
       renderLogs();
     }
-
     function restoreDefaultLogs() {
       const existingIds = new Set(logs.map(l => l.id));
-      defaultLogs.forEach(dl => {
-        if (!existingIds.has(dl.id)) logs.push(dl);
-      });
+      defaultLogs.forEach(dl => { if (!existingIds.has(dl.id)) logs.push(dl); });
       localStorage.setItem('gym_logs', JSON.stringify(logs));
       renderLogs();
     }
     renderLogs();
 
-    // Cronómetro
+    // Audio Chime para iOS Safari (ya que iOS no soporta vibrate)
+    let audioCtx = null;
+    function playChime() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const playTone = (freq, start, dur) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.25, start);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(start);
+          osc.stop(start + dur);
+        };
+        const now = audioCtx.currentTime;
+        playTone(880, now, 0.18);
+        playTone(1174.66, now + 0.2, 0.35);
+      } catch (e) {}
+    }
+
     let timerDuration = 60;
     let timerRemaining = 60;
     let timerInterval = null;
@@ -952,20 +934,24 @@
       const disp = document.getElementById('timerDisplay');
       disp.innerText = formatTime(sec);
       disp.style.color = 'var(--sky)';
-      document.getElementById('startTimerBtn').innerText = '▶ Iniciar';
+      document.getElementById('startTimerBtn').innerText = '▶';
     }
 
     function toggleTimer() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
       const btn = document.getElementById('startTimerBtn');
       const disp = document.getElementById('timerDisplay');
       if (isRunning) {
         clearInterval(timerInterval);
         isRunning = false;
-        btn.innerText = '▶ Reanudar';
+        btn.innerText = '▶';
       } else {
         if (timerRemaining <= 0) timerRemaining = timerDuration;
         isRunning = true;
-        btn.innerText = '⏸ Pausar';
+        btn.innerText = '⏸';
         disp.style.color = 'var(--emerald)';
         timerInterval = setInterval(() => {
           timerRemaining--;
@@ -975,8 +961,8 @@
             isRunning = false;
             disp.innerText = '¡LISTO!';
             disp.style.color = 'var(--rose)';
-            btn.innerText = '↺ Reiniciar';
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            btn.innerText = '↺';
+            playChime();
           }
         }, 1000);
       }
