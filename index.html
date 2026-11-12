@@ -278,6 +278,41 @@
     .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
     .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 12px; color: var(--text); }
     .info-card h4 { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+
+    /* Catálogo de Ejercicios */
+    .catalog-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center; }
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .filter-chip {
+      background: var(--btn-sec-bg);
+      color: var(--btn-sec-text);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .filter-chip.active-chip {
+      background: var(--sky);
+      color: var(--sky-text);
+      border-color: var(--sky);
+      font-weight: 800;
+    }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 12px;
+    }
+    .catalog-card {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .catalog-top { display: flex; gap: 12px; align-items: flex-start; }
   </style>
 </head>
 <body>
@@ -348,6 +383,7 @@
       <button onclick="showDay('piernaa')" id="tab-piernaa" class="day-tab">🦵 Sem 2: Pierna A</button>
       <button onclick="showDay('empuje')" id="tab-empuje" class="day-tab">🛡️ Sem 2: Empuje</button>
       <button onclick="showDay('espalda')" id="tab-espalda" class="day-tab">🦅 Sem 2: Espalda</button>
+      <button onclick="showDay('catalogo')" id="tab-catalogo" class="day-tab">📚 Catálogo de Ejercicios</button>
     </div>
 
     <!-- Contenido Dinámico -->
@@ -478,8 +514,38 @@
         </div>
       </div>
 
+      <!-- CATÁLOGO DE EJERCICIOS -->
+      <div id="content-catalogo" class="day-content hidden">
+        <div class="section-title" style="margin-bottom: 6px;">
+          <span>📚</span> Catálogo Completo de Ejercicios (Offline)
+        </div>
+        <p class="subtitle" style="margin-bottom: 14px;">
+          Busca cualquier ejercicio por nombre o grupo muscular, revisa su técnica y envíalo con un clic al día que quieras.
+        </p>
+        <div class="catalog-controls">
+          <input type="text" id="catalogSearch" class="log-input" placeholder="🔍 Buscar ejercicio (ej. Remo, Hip Thrust, Fondos...)" oninput="renderCatalog()">
+          <select id="catalogTargetDay" class="log-input" style="max-width: 240px;">
+            <option value="hoy">Enviar a: 🔥 HOY Jueves</option>
+            <option value="piernab">Enviar a: ⚡ Viernes Pierna B</option>
+            <option value="piernaa">Enviar a: 🦵 Sem 2 Pierna A</option>
+            <option value="empuje">Enviar a: 🛡️ Sem 2 Empuje</option>
+            <option value="espalda">Enviar a: 🦅 Sem 2 Espalda</option>
+          </select>
+        </div>
+        <div class="filter-chips" id="catalogFilters">
+          <button onclick="setCatFilter('Todos', this)" class="filter-chip active-chip">Todos</button>
+          <button onclick="setCatFilter('Pecho', this)" class="filter-chip">Pecho</button>
+          <button onclick="setCatFilter('Espalda', this)" class="filter-chip">Espalda</button>
+          <button onclick="setCatFilter('Pierna', this)" class="filter-chip">Pierna & Glúteo</button>
+          <button onclick="setCatFilter('Hombro', this)" class="filter-chip">Hombros</button>
+          <button onclick="setCatFilter('Brazos', this)" class="filter-chip">Bíceps & Tríceps</button>
+          <button onclick="setCatFilter('Core', this)" class="filter-chip">Abdomen / Core</button>
+        </div>
+        <div id="catalogGrid" class="catalog-grid"></div>
+      </div>
+
       <!-- Agregar Ejercicio Nuevo al Día Actual -->
-      <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
+      <div id="customExFormBox" style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
         <div style="font-size: 13px; font-weight: 800; color: var(--text-strong); margin-bottom: 10px;">
           ➕ ¿Te pusieron otro ejercicio? Agrégalo a este día:
         </div>
@@ -715,10 +781,108 @@
       document.querySelectorAll('.day-tab').forEach(el => el.classList.remove('active-tab'));
       document.getElementById('content-' + dayId)?.classList.remove('hidden');
       document.getElementById('tab-' + dayId)?.classList.add('active-tab');
+      const formBox = document.getElementById('customExFormBox');
+      if (formBox) formBox.style.display = (dayId === 'catalogo') ? 'none' : 'block';
       localStorage.setItem('gym_active_tab', dayId);
     }
     if (currentDayId && document.getElementById('content-' + currentDayId)) showDay(currentDayId);
     renderAllTables();
+
+    // Catálogo de Ejercicios Offline (24 Ejercicios Clave)
+    const CATALOG = [
+      // Pecho
+      { cat: 'Pecho', svg: 'bench_press', name: 'Press de Banca Plano', muscle: 'Pectoral Mayor', sets: '4 x 10–12', note: 'Retrae escápulas y baja controlado al centro del pecho.' },
+      { cat: 'Pecho', svg: 'bench_press', name: 'Press Inclinado Mancuernas (30°)', muscle: 'Pectoral Superior', sets: '3 x 10–12', note: 'Inclinación moderada para enfocar la parte alta del pecho.' },
+      { cat: 'Pecho', svg: 'pec_deck', name: 'Aperturas en Pec-Deck / Máquina', muscle: 'Pectoral (Aislamiento)', sets: '3 x 12–15', note: 'Junta brazos al frente sin encoger los hombros.' },
+      { cat: 'Pecho', svg: 'pec_deck', name: 'Cruces en Polea Alta (Crossover)', muscle: 'Pecho Inferior / Medio', sets: '3 x 12–15', note: 'Inclina ligeramente el torso y cruza manos abajo.' },
+      // Espalda
+      { cat: 'Espalda', svg: 'lat_pulldown', name: 'Jalón al Pecho (Agarre Ancho/Neutro)', muscle: 'Dorsal Ancho', sets: '4 x 10–12', note: 'Lleva los codos hacia abajo y saca el pecho.' },
+      { cat: 'Espalda', svg: 'cable_row', name: 'Remo en Polea Baja (Agarre V)', muscle: 'Espalda Media', sets: '4 x 10–12', note: 'Junta los omóplatos 1 segundo atrás en cada repetición.' },
+      { cat: 'Espalda', svg: 'db_row', name: 'Remo Unilateral c/ Mancuerna', muscle: 'Dorsal Unilateral', sets: '3 x 10–12', note: 'Apóyate en un banco y sube el codo hacia tu cadera.' },
+      { cat: 'Espalda', svg: 'lat_pulldown', name: 'Pullover en Polea Alta (Cuerda/Barra)', muscle: 'Dorsales y Serrato', sets: '3 x 12–15', note: 'Brazos semi-rectos, baja la barra hasta los muslos.' },
+      // Pierna
+      { cat: 'Pierna', svg: 'leg_press', name: 'Prensa de Piernas 45°', muscle: 'Cuádriceps y Glúteo', sets: '4 x 10–12', note: 'Pies medios para cuádriceps; pies altos para glúteo/femoral.' },
+      { cat: 'Pierna', svg: 'goblet_squat', name: 'Sentadilla Goblet c/ Mancuerna', muscle: 'Pierna General y Core', sets: '3 x 10–12', note: 'Mancuerna pegada al pecho y espalda bien recta.' },
+      { cat: 'Pierna', svg: 'leg_ext', name: 'Extensión de Cuádriceps en Máquina', muscle: 'Cuádriceps Aislados', sets: '3 x 12–15', note: 'Aguanta 1 segundo arriba contrayendo fuerte.' },
+      { cat: 'Pierna', svg: 'rdl', name: 'Peso Muerto Rumano c/ Mancuernas', muscle: 'Isquiotibiales y Glúteo', sets: '4 x 10–12', note: 'Rodillas semi-fijas, empuja la cadera hacia atrás.' },
+      { cat: 'Pierna', svg: 'leg_curl', name: 'Curl Femoral (Acostado o Sentado)', muscle: 'Isquiotibiales', sets: '4 x 10–12', note: 'No despegues la cadera; baja en 2 segundos.' },
+      { cat: 'Pierna', svg: 'lunges', name: 'Zancadas / Desplantes c/ Mancuernas', muscle: 'Pierna Global & Glúteo', sets: '3 x 10 c/ lado', note: 'Paso largo y controlado, rodilla trasera casi toca el suelo.' },
+      { cat: 'Pierna', svg: 'leg_press', name: 'Hip Thrust / Puente de Glúteo', muscle: 'Glúteo Mayor', sets: '3 x 10–12', note: 'Aprieta los glúteos 1 segundo arriba con mirada al frente.' },
+      { cat: 'Pierna', svg: 'calf_raise', name: 'Elevación de Talones (Gemelos)', muscle: 'Pantorrilla', sets: '4 x 15', note: 'Rango completo arriba y abajo, sin rebotar.' },
+      // Hombro
+      { cat: 'Hombro', svg: 'shoulder_press', name: 'Press Militar c/ Mancuernas', muscle: 'Deltoides Anterior / Medio', sets: '3 x 10–12', note: 'Baja a la altura de las orejas y sube controlado.' },
+      { cat: 'Hombro', svg: 'lateral_raise', name: 'Elevaciones Laterales (Manc. o Polea)', muscle: 'Deltoides Lateral', sets: '4 x 12–15', note: 'Sube hasta la altura de los hombros sin encoger el cuello.' },
+      { cat: 'Hombro', svg: 'face_pull', name: 'Face Pull en Polea Alta', muscle: 'Hombro Posterior / Manguito', sets: '3 x 15', note: 'Jala la cuerda hacia tu frente separando las manos.' },
+      // Brazos
+      { cat: 'Brazos', svg: 'bicep_curl', name: 'Curl de Bíceps Barra Z o Mancuernas', muscle: 'Bíceps Braquial', sets: '3 x 10–12', note: 'Codos pegados al cuerpo sin balancear la espalda.' },
+      { cat: 'Brazos', svg: 'bicep_curl', name: 'Curl Martillo con Mancuernas', muscle: 'Braquial y Antebrazo', sets: '3 x 12', note: 'Palmas viéndose entre sí (agarre neutro).' },
+      { cat: 'Brazos', svg: 'tricep_rope', name: 'Extensión de Tríceps en Polea (Cuerda)', muscle: 'Tríceps', sets: '3 x 12–15', note: 'Abre la cuerda abajo manteniendo los codos fijos.' },
+      { cat: 'Brazos', svg: 'tricep_rope', name: 'Press Francés c/ Mancuernas o Barra Z', muscle: 'Tríceps (Cabeza Larga)', sets: '3 x 10–12', note: 'Baja controlado detrás de la frente/cabeza.' },
+      // Core
+      { cat: 'Core', svg: 'plank', name: 'Plancha Abdominal / Elevación Piernas', muscle: 'Core y Abdomen', sets: '3 x 35–45s', note: 'Aprieta abdomen y glúteos manteniendo postura neutra.' }
+    ];
+
+    let activeCatFilter = 'Todos';
+    function setCatFilter(cat, btn) {
+      activeCatFilter = cat;
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active-chip'));
+      if (btn) btn.classList.add('active-chip');
+      renderCatalog();
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById('catalogGrid');
+      if (!grid) return;
+      const query = (document.getElementById('catalogSearch')?.value || '').toLowerCase();
+      grid.innerHTML = '';
+
+      CATALOG.forEach((item, idx) => {
+        const matchCat = activeCatFilter === 'Todos' || item.cat === activeCatFilter;
+        const matchSearch = !query || item.name.toLowerCase().includes(query) || item.muscle.toLowerCase().includes(query) || item.cat.toLowerCase().includes(query);
+        if (!matchCat || !matchSearch) return;
+
+        const card = document.createElement('div');
+        card.className = 'catalog-card';
+        card.innerHTML = `
+          <div class="catalog-top">
+            <div class="ex-svg-box">${SVGS[item.svg] || ''}</div>
+            <div>
+              <div class="badge badge-sky" style="display:inline-block; margin-bottom:4px;">${item.cat} • ${item.sets}</div>
+              <div class="ex-name">${item.name}</div>
+              <div class="ex-muscle">${item.muscle}</div>
+            </div>
+          </div>
+          <p class="ex-note">${item.note}</p>
+          <button onclick="addFromCatalog(${idx}, this)" class="btn-primary" style="width:100%; text-align:center;">+ Agregar al día seleccionado</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function addFromCatalog(idx, btn) {
+      const item = CATALOG[idx];
+      const targetDay = document.getElementById('catalogTargetDay').value;
+      if (!customExercises[targetDay]) customExercises[targetDay] = [];
+      customExercises[targetDay].push({
+        id: 'cat-' + Date.now() + '-' + idx,
+        svg: item.svg,
+        name: '⭐ ' + item.name,
+        muscle: item.muscle,
+        sets: item.sets,
+        note: item.note,
+        isCustom: true
+      });
+      localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercises));
+      renderAllTables();
+      const orig = btn.innerText;
+      btn.innerText = '✓ Agregado';
+      btn.style.background = 'var(--emerald)';
+      setTimeout(() => {
+        btn.innerText = orig;
+        btn.style.background = 'var(--sky)';
+      }, 1200);
+    }
+    renderCatalog();
 
     // Bitácora con botón de restauración
     const defaultLogs = [
