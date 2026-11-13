@@ -324,23 +324,23 @@
           <span class="day-focus">Pecho + Remo</span>
           <span class="day-desc">Completado</span>
         </div>
-        <div class="day-box day-today">
-          <span class="day-name" style="color: var(--sky);">🔥 Jue 12 (HOY)</span>
+        <div class="day-box day-done">
+          <span class="day-name" style="color: var(--emerald);">✓ Jue 12 Nov</span>
           <span class="day-focus">Hombro, Brazos & Jalón</span>
-          <span class="day-desc">Descansa pierna/pecho</span>
+          <span class="day-desc">Completado (Hevy)</span>
         </div>
-        <div class="day-box">
-          <span class="day-name" style="color: var(--muted);">⏳ Vie 13 Nov</span>
+        <div class="day-box day-today">
+          <span class="day-name" style="color: var(--sky);">🔥 Vie 13 (HOY)</span>
           <span class="day-focus">Pierna B (Femoral)</span>
-          <span class="day-desc">Isquios & Glúteo</span>
+          <span class="day-desc">Isquios, Glúteo & Gemelos</span>
         </div>
       </div>
     </section>
 
     <!-- Pestañas Deslizables Horizontales -->
     <div class="tabs">
-      <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab active-tab">🔥 HOY Jueves</button>
-      <button onclick="showDay('piernab')" id="tab-piernab" class="day-tab">⚡ Viernes: Pierna B</button>
+      <button onclick="showDay('piernab')" id="tab-piernab" class="day-tab active-tab">🔥 HOY Viernes: Pierna B</button>
+      <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab">✓ Jueves: Hombro & Brazos</button>
       <button onclick="showDay('piernaa')" id="tab-piernaa" class="day-tab">🦵 Sem 2: Pierna A</button>
       <button onclick="showDay('empuje')" id="tab-empuje" class="day-tab">🛡️ Sem 2: Empuje</button>
       <button onclick="showDay('espalda')" id="tab-espalda" class="day-tab">🦅 Sem 2: Espalda</button>
@@ -350,13 +350,13 @@
     <!-- Contenido Dinámico -->
     <div class="card">
 
-      <!-- HOY JUEVES -->
-      <div id="content-hoy" class="day-content">
+      <!-- JUEVES (COMPLETADO) -->
+      <div id="content-hoy" class="day-content hidden">
         <div class="hero-banner">
           <img src="./img/espalda_brazos.png" alt="Espalda, Hombros y Brazos" onerror="this.style.display='none'">
           <div class="hero-overlay">
-            <div class="hero-title">🔥 Hoy Jueves: Hombros, Brazos & Jalón</div>
-            <div class="hero-sub">Completa la espalda de ayer sin fatigar el pecho.</div>
+            <div class="hero-title">✓ Jueves: Hombros, Brazos & Jalón</div>
+            <div class="hero-sub">Sesión completada (también armada en Hevy).</div>
           </div>
         </div>
         <div class="table-wrap">
@@ -369,13 +369,13 @@
         </div>
       </div>
 
-      <!-- VIERNES: PIERNA B -->
-      <div id="content-piernab" class="day-content hidden">
+      <!-- HOY VIERNES: PIERNA B -->
+      <div id="content-piernab" class="day-content">
         <div class="hero-banner">
           <img src="./img/pierna.png" alt="Pierna B" onerror="this.style.display='none'">
           <div class="hero-overlay">
-            <div class="hero-title">⚡ Viernes: Pierna B (Femoral & Glúteo)</div>
-            <div class="hero-sub">Cadena posterior completa tras 72h de descanso.</div>
+            <div class="hero-title">🔥 HOY Viernes: Pierna B (Femoral & Glúteo)</div>
+            <div class="hero-sub">Cadena posterior completa tras 72h de descanso desde el martes.</div>
           </div>
         </div>
         <div class="table-wrap">
@@ -619,7 +619,7 @@
     };
 
     let customExercises = JSON.parse(localStorage.getItem('gym_custom_exercises')) || {};
-    let currentDayId = localStorage.getItem('gym_active_tab') || 'hoy';
+    let currentDayId = localStorage.getItem('gym_active_tab') || 'piernab';
 
     function renderAllTables() {
       Object.keys(ROUTINES).forEach(dayKey => {
@@ -852,7 +852,8 @@
 
     const defaultLogs = [
       { id: 101, text: '✅ Mar 10 Nov — Pierna general (Día 1 inicio)' },
-      { id: 102, text: '✅ Mié 11 Nov — Pecho y Espalda (Remo)' }
+      { id: 102, text: '✅ Mié 11 Nov — Pecho y Espalda (Remo)' },
+      { id: 103, text: '✅ Jue 12 Nov — Hombro, Brazos y Jalón (Hevy)' }
     ];
     let logs = JSON.parse(localStorage.getItem('gym_logs'));
     if (!logs || logs.length === 0) {
