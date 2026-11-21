@@ -339,7 +339,8 @@
 
     <!-- Pestañas Deslizables Horizontales -->
     <div class="tabs">
-      <button onclick="showDay('piernab')" id="tab-piernab" class="day-tab active-tab">🔥 HOY Viernes: Pierna B</button>
+      <button onclick="showDay('encasa')" id="tab-encasa" class="day-tab active-tab">🏠 HOY Sáb: En Casa</button>
+      <button onclick="showDay('piernab')" id="tab-piernab" class="day-tab">⚡ Pierna B</button>
       <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab">✓ Jueves: Hombro & Brazos</button>
       <button onclick="showDay('empuje')" id="tab-empuje" class="day-tab">🛡️ Sem 2 Lunes: Empuje</button>
       <button onclick="showDay('piernaa')" id="tab-piernaa" class="day-tab">🦵 Sem 2 Martes: Pierna A (Lau)</button>
@@ -369,8 +370,27 @@
         </div>
       </div>
 
+      <!-- HOY SÁBADO: EN CASA -->
+      <div id="content-encasa" class="day-content">
+        <div class="hero-banner">
+          <img src="./img/pierna.png" alt="Entreno en Casa Pierna y Abdomen" onerror="this.style.display='none'">
+          <div class="hero-overlay">
+            <div class="hero-title">🏠 HOY Sábado: En Casa (Pierna, Glúteo & Abdomen)</div>
+            <div class="hero-sub">Mancuernas de 15 kg y 25 kg • Sin saltos • Amigable con el estómago.</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
+            </thead>
+            <tbody id="tbody-encasa"></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- HOY VIERNES: PIERNA B -->
-      <div id="content-piernab" class="day-content">
+      <div id="content-piernab" class="day-content hidden">
         <div class="hero-banner">
           <img src="./img/pierna.png" alt="Pierna B" onerror="this.style.display='none'">
           <div class="hero-overlay">
@@ -565,10 +585,13 @@
       bench_press: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="42" x2="54" y2="42" stroke="var(--muted)" stroke-width="3"/><circle cx="16" cy="34" r="4.5"/><path d="M20 38 L42 38 L48 52"/><line x1="28" y1="38" x2="28" y2="20"/><line x1="18" y1="20" x2="38" y2="20" stroke="var(--svg-accent)" stroke-width="3.5"/><path d="M28 14 L28 8 M25 11 L28 7 L31 11" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
       pec_deck: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="20" r="5"/><path d="M24 28 L40 28 L40 46 L24 46 Z"/><path d="M24 28 L12 24 L18 16" stroke="var(--svg-accent)"/><path d="M40 28 L52 24 L46 16" stroke="var(--svg-accent)"/><path d="M20 14 L28 14 M36 14 L44 14" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
       cable_row: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="12" x2="8" y2="54" stroke="var(--muted)"/><line x1="8" y1="38" x2="28" y2="34" stroke="var(--svg-accent)"/><circle cx="42" cy="20" r="5"/><path d="M42 25 L40 44 L22 46"/><path d="M40 30 L28 34"/><path d="M26 27 L34 27 M31 24 L35 27 L31 30" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      db_row: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="42" x2="48" y2="42" stroke="var(--muted)" stroke-width="3"/><circle cx="44" cy="24" r="4.5"/><path d="M40 28 L20 32 L20 42"/><path d="M20 32 L18 54"/><path d="M36 29 L36 46"/><rect x="31" y="46" width="10" height="5" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M44 42 L44 33 M41 36 L44 32 L47 36" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`
+      db_row: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="42" x2="48" y2="42" stroke="var(--muted)" stroke-width="3"/><circle cx="44" cy="24" r="4.5"/><path d="M40 28 L20 32 L20 42"/><path d="M20 32 L18 54"/><path d="M36 29 L36 46"/><rect x="31" y="46" width="10" height="5" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M44 42 L44 33 M41 36 L44 32 L47 36" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
+      glute_bridge: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="48" x2="58" y2="48" stroke="var(--muted)"/><circle cx="14" cy="42" r="4.5"/><path d="M18 44 L36 30 L48 48"/><rect x="30" y="25" width="9" height="6" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M35 20 L35 13 M32 16 L35 12 L38 16" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
+      dead_bug: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="48" x2="58" y2="48" stroke="var(--muted)"/><circle cx="14" cy="40" r="4.5"/><path d="M18 44 L40 44"/><path d="M22 44 L18 24" stroke="var(--svg-accent)"/><path d="M40 44 L42 28 L52 28"/><path d="M48 22 L54 22 M51 19 L55 22 L51 25" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`
     };
 
     const DAY_LABELS = {
+      encasa: 'En Casa (Pierna/Glúteo/Abd)',
       hoy: 'Jueves (Hombro/Brazos/Jalón)',
       piernab: 'Viernes (Pierna B)',
       piernaa: 'Pierna A',
@@ -577,6 +600,15 @@
     };
 
     const ROUTINES = {
+      encasa: [
+        { id: 'ec-1', svg: 'goblet_squat', name: '1. Sentadilla Goblet (15 o 25 kg)', muscle: 'Cuádriceps y Glúteo', sets: '4 x 12', note: '1 mancuerna pegada al pecho. Baja lento en 2 seg sin rebotar.' },
+        { id: 'ec-2', svg: 'rdl', name: '2. Peso Muerto Rumano (15 o 25 kg)', muscle: 'Femoral y Glúteo', sets: '4 x 12', note: '1 mancuerna en cada mano. Rodillas semi-fijas, cadera atrás.' },
+        { id: 'ec-3', svg: 'lunges', name: '3. Desplantes hacia Atrás', muscle: 'Pierna Global', sets: '3 x 10 c/ lado', note: 'Con mancuernas de 15 kg (o sin peso si sientes el estómago pesado).' },
+        { id: 'ec-4', svg: 'glute_bridge', name: '4. Puente de Glúteo en Piso', muscle: 'Glúteo Mayor', sets: '4 x 15', note: 'Mancuerna de 15 o 25 kg sobre la cadera. Aprieta 1 seg arriba.' },
+        { id: 'ec-5', svg: 'calf_raise', name: '5. Gemelos a 1 Pierna (15 kg)', muscle: 'Pantorrilla', sets: '4 x 15 c/ lado', note: 'Sostén mancuerna de 15 kg en una mano y apóyate en la pared.' },
+        { id: 'ec-6', svg: 'plank', name: '6. Plancha Abdominal', muscle: 'Core (Sin compresión)', sets: '3 x 35–45s', note: 'Isométrico: trabaja abdomen sin revolver el estómago.' },
+        { id: 'ec-7', svg: 'dead_bug', name: '7. Dead Bug (Bicho Muerto)', muscle: 'Abdomen Profundo', sets: '3 x 12 c/ lado', note: 'Boca arriba, estira brazo y pierna contraria lento pegando espalda al piso.' }
+      ],
       hoy: [
         { id: 'hoy-1', svg: 'lat_pulldown', name: '1. Jalón al Pecho en Polea', muscle: 'Dorsal Ancho', sets: '4 x 10–12', note: 'Agarre neutro o abierto, jala llevando los codos hacia las costillas.' },
         { id: 'hoy-2', svg: 'shoulder_press', name: '2. Press Militar Mancuernas', muscle: 'Hombro Anterior', sets: '3 x 10–12', note: 'Sentado casi recto. Baja a la altura de tus orejas.' },
@@ -619,7 +651,7 @@
     };
 
     let customExercises = JSON.parse(localStorage.getItem('gym_custom_exercises')) || {};
-    let currentDayId = localStorage.getItem('gym_active_tab') || 'piernab';
+    let currentDayId = localStorage.getItem('gym_active_tab') || 'encasa';
 
     function renderAllTables() {
       Object.keys(ROUTINES).forEach(dayKey => {
