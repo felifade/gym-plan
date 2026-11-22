@@ -298,53 +298,52 @@
     <header class="card header">
       <div>
         <div class="badges">
-          <span class="badge badge-emerald">Semana 1</span>
-          <span class="badge badge-sky">4–5 Días</span>
+          <span class="badge badge-emerald">Meta: 84 kg → 80 kg</span>
+          <span class="badge badge-sky">44 años • 190 cm</span>
           <span class="badge badge-offline" id="offlineStatus">⚡ Offline Listo</span>
         </div>
         <h1>🏋️‍♂️ Mi Plan GYM</h1>
-        <p class="subtitle">Diseñado para iPhone & iPad • Con Laura y Yedra</p>
+        <p class="subtitle">Sincronizado con ENTRENAMIENTO.md (Hevy & ChatGPT)</p>
       </div>
       <div class="header-actions">
         <button onclick="toggleTheme()" id="themeToggleBtn" class="theme-btn">☀️ Claro</button>
       </div>
     </header>
 
-    <!-- Historial Semana 1 -->
+    <!-- Historial Semana Actual -->
     <section class="card">
-      <div class="section-title"><span>📊</span> Semana 1 (Inicio: 10 Nov)</div>
+      <div class="section-title"><span>📊</span> Estructura Semanal (Actualizado: Dom 22 Nov)</div>
       <div class="week-grid">
-        <div class="day-box day-done">
-          <span class="day-name" style="color: var(--emerald);">✓ Mar 10 Nov</span>
-          <span class="day-focus">Pierna General</span>
-          <span class="day-desc">Completado</span>
-        </div>
-        <div class="day-box day-done">
-          <span class="day-name" style="color: var(--emerald);">✓ Mié 11 Nov</span>
-          <span class="day-focus">Pecho + Remo</span>
-          <span class="day-desc">Completado</span>
-        </div>
-        <div class="day-box day-done">
-          <span class="day-name" style="color: var(--emerald);">✓ Jue 12 Nov</span>
-          <span class="day-focus">Hombro, Brazos & Jalón</span>
-          <span class="day-desc">Completado (Hevy)</span>
-        </div>
         <div class="day-box day-today">
-          <span class="day-name" style="color: var(--sky);">🔥 Vie 13 (HOY)</span>
-          <span class="day-focus">Pierna B (Femoral)</span>
-          <span class="day-desc">Isquios, Glúteo & Gemelos</span>
+          <span class="day-name" style="color: var(--sky);">🏃 Lunes (Mañana)</span>
+          <span class="day-focus">Cardio / Core</span>
+          <span class="day-desc">Opcional en GYM</span>
+        </div>
+        <div class="day-box">
+          <span class="day-name" style="color: var(--muted);">🦵 Martes</span>
+          <span class="day-focus">Pierna (con Lau)</span>
+          <span class="day-desc">Cuádriceps & Glúteo</span>
+        </div>
+        <div class="day-box">
+          <span class="day-name" style="color: var(--muted);">🛡️ Miércoles</span>
+          <span class="day-focus">Pecho y Espalda</span>
+          <span class="day-desc">Torso completo</span>
+        </div>
+        <div class="day-box day-done">
+          <span class="day-name" style="color: var(--emerald);">✓ Sábado 21 Nov</span>
+          <span class="day-focus">En Casa ✓</span>
+          <span class="day-desc">Pierna, Glúteo & Abd</span>
         </div>
       </div>
     </section>
 
     <!-- Pestañas Deslizables Horizontales -->
     <div class="tabs">
-      <button onclick="showDay('encasa')" id="tab-encasa" class="day-tab active-tab">🏠 HOY Sáb: En Casa</button>
-      <button onclick="showDay('piernab')" id="tab-piernab" class="day-tab">⚡ Pierna B</button>
-      <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab">✓ Jueves: Hombro & Brazos</button>
-      <button onclick="showDay('empuje')" id="tab-empuje" class="day-tab">🛡️ Sem 2 Lunes: Empuje</button>
-      <button onclick="showDay('piernaa')" id="tab-piernaa" class="day-tab">🦵 Sem 2 Martes: Pierna A (Lau)</button>
-      <button onclick="showDay('espalda')" id="tab-espalda" class="day-tab">🦅 Sem 2 Mié: Espalda</button>
+      <button onclick="showDay('encasa')" id="tab-encasa" class="day-tab active-tab">🏠 Sáb 21: En Casa ✓</button>
+      <button onclick="showDay('lunes')" id="tab-lunes" class="day-tab">🏃 Lunes: Cardio & Core</button>
+      <button onclick="showDay('piernaa')" id="tab-piernaa" class="day-tab">🦵 Martes: Pierna (Lau)</button>
+      <button onclick="showDay('empuje')" id="tab-empuje" class="day-tab">🛡️ Mié: Pecho & Espalda</button>
+      <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab">🔥 Jue: Hombro & Brazos</button>
       <button onclick="showDay('catalogo')" id="tab-catalogo" class="day-tab">📚 Catálogo (24)</button>
     </div>
 
@@ -385,6 +384,25 @@
               <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
             </thead>
             <tbody id="tbody-encasa"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LUNES: CARDIO & CORE -->
+      <div id="content-lunes" class="day-content hidden">
+        <div class="hero-banner">
+          <img src="./img/espalda_brazos.png" alt="Cardio y Core" onerror="this.style.display='none'">
+          <div class="hero-overlay">
+            <div class="hero-title">🏃 Lunes: Cardio / Core Opcional en GYM</div>
+            <div class="hero-sub">Acondicionamiento suave para arrancar la semana sin fatigar piernas antes del martes con Lau.</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
+            </thead>
+            <tbody id="tbody-lunes"></tbody>
           </table>
         </div>
       </div>
@@ -592,22 +610,29 @@
 
     const DAY_LABELS = {
       encasa: 'En Casa (Pierna/Glúteo/Abd)',
-      hoy: 'Jueves (Hombro/Brazos/Jalón)',
+      lunes: 'Lunes (Cardio & Core)',
+      hoy: 'Jueves (Hombro/Brazos)',
       piernab: 'Viernes (Pierna B)',
-      piernaa: 'Pierna A',
-      empuje: 'Torso Empuje',
+      piernaa: 'Martes Pierna A (Lau)',
+      empuje: 'Miércoles (Pecho & Espalda)',
       espalda: 'Espalda & Bíceps'
     };
 
     const ROUTINES = {
       encasa: [
-        { id: 'ec-1', svg: 'goblet_squat', name: '1. Sentadilla Goblet (15 o 25 kg)', muscle: 'Cuádriceps y Glúteo', sets: '4 x 12', note: '1 mancuerna pegada al pecho. Baja lento en 2 seg sin rebotar.' },
-        { id: 'ec-2', svg: 'rdl', name: '2. Peso Muerto Rumano (15 o 25 kg)', muscle: 'Femoral y Glúteo', sets: '4 x 12', note: '1 mancuerna en cada mano. Rodillas semi-fijas, cadera atrás.' },
-        { id: 'ec-3', svg: 'lunges', name: '3. Desplantes hacia Atrás', muscle: 'Pierna Global', sets: '3 x 10 c/ lado', note: 'Con mancuernas de 15 kg (o sin peso si sientes el estómago pesado).' },
-        { id: 'ec-4', svg: 'glute_bridge', name: '4. Puente de Glúteo en Piso', muscle: 'Glúteo Mayor', sets: '4 x 15', note: 'Mancuerna de 15 o 25 kg sobre la cadera. Aprieta 1 seg arriba.' },
-        { id: 'ec-5', svg: 'calf_raise', name: '5. Gemelos a 1 Pierna (15 kg)', muscle: 'Pantorrilla', sets: '4 x 15 c/ lado', note: 'Sostén mancuerna de 15 kg en una mano y apóyate en la pared.' },
-        { id: 'ec-6', svg: 'plank', name: '6. Plancha Abdominal', muscle: 'Core (Sin compresión)', sets: '3 x 35–45s', note: 'Isométrico: trabaja abdomen sin revolver el estómago.' },
-        { id: 'ec-7', svg: 'dead_bug', name: '7. Dead Bug (Bicho Muerto)', muscle: 'Abdomen Profundo', sets: '3 x 12 c/ lado', note: 'Boca arriba, estira brazo y pierna contraria lento pegando espalda al piso.' }
+        { id: 'ec-1', svg: 'goblet_squat', name: '1. Goblet Squat', muscle: 'Cuádriceps y Glúteo', sets: '15×12, 15×12, 25×12', note: 'Registro Sáb 21 Nov: ¡subiste a 25 kg en la 3ra serie!' },
+        { id: 'ec-2', svg: 'rdl', name: '2. Peso Muerto Rumano (2 manc.)', muscle: 'Femoral y Glúteo', sets: '3 x 12 (15 kg)', note: 'Registro Sáb 21 Nov: 15 kg × 12 × 3 series.' },
+        { id: 'ec-3', svg: 'lunges', name: '3. Zancada Inversa', muscle: 'Pierna Global', sets: '3 x 10 (15 kg)', note: 'Registro Sáb 21 Nov: 15 kg × 10 × 3 series.' },
+        { id: 'ec-4', svg: 'glute_bridge', name: '4. Puente de Glúteo', muscle: 'Glúteo Mayor', sets: '15×15, 25×16 (x2)', note: 'Registro Sáb 21 Nov: 15 kg × 15; 25 kg × 16 × 2 series.' },
+        { id: 'ec-5', svg: 'calf_raise', name: '5. Gemelos', muscle: 'Pantorrilla', sets: '3 x 18 (15 kg)', note: 'Registro Sáb 21 Nov: 15 kg × 18 × 3 series.' },
+        { id: 'ec-6', svg: 'dead_bug', name: '6. Dead Bug', muscle: 'Abdomen Profundo', sets: '3 x 10', note: 'Registro Sáb 21 Nov: 3 × 10.' },
+        { id: 'ec-7', svg: 'plank', name: '7. Plancha + Bird Dog + Cuerda', muscle: 'Core & Cardio', sets: '32-35s | 2×10 | 6m', note: 'Plancha 32s, 34s, 35s • Bird dog 2×10 • Cuerda 6 minutos.' }
+      ],
+      lunes: [
+        { id: 'lu-1', svg: 'plank', name: '1. Caminadora / Bici / Cuerda', muscle: 'Cardio Zona 2', sets: '20–30 min', note: 'Ritmo conversacional constante para quemar grasa sin fatigar piernas.' },
+        { id: 'lu-2', svg: 'dead_bug', name: '2. Dead Bug', muscle: 'Core Profundo', sets: '3 x 10–12', note: 'Espalda baja pegada al piso.' },
+        { id: 'lu-3', svg: 'plank', name: '3. Plancha Abdominal', muscle: 'Core', sets: '3 x 35–45s', note: 'Aprieta glúteos y abdomen.' },
+        { id: 'lu-4', svg: 'plank', name: '4. Bird Dog', muscle: 'Estabilidad Lumbar', sets: '2–3 x 10 c/ lado', note: 'Extiende brazo y pierna contraria sin arquear espalda.' }
       ],
       hoy: [
         { id: 'hoy-1', svg: 'lat_pulldown', name: '1. Jalón al Pecho en Polea', muscle: 'Dorsal Ancho', sets: '4 x 10–12', note: 'Agarre neutro o abierto, jala llevando los codos hacia las costillas.' },
@@ -883,9 +908,10 @@
     renderCatalog();
 
     const defaultLogs = [
-      { id: 101, text: '✅ Mar 10 Nov — Pierna general (Día 1 inicio)' },
+      { id: 105, text: '✅ Sáb 21 Nov — En Casa: Goblet 25kg, RDL 15kg, Puente 25kg, Cuerda 6m' },
+      { id: 104, text: '✅ Jue 12 Nov — Hombro, Brazos y Jalón' },
       { id: 102, text: '✅ Mié 11 Nov — Pecho y Espalda (Remo)' },
-      { id: 103, text: '✅ Jue 12 Nov — Hombro, Brazos y Jalón (Hevy)' }
+      { id: 101, text: '✅ Mar 10 Nov — Pierna general' }
     ];
     let logs = JSON.parse(localStorage.getItem('gym_logs'));
     if (!logs || logs.length === 0) {
