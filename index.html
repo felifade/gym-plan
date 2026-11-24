@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="Mi GYM">
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./img/espalda_brazos.png">
-  <title>Mi GYM - App Móvil Offline</title>
+  <title>Mi GYM - Dashboard & Comidas</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -23,16 +23,9 @@
       --sky-text: #0f172a;
       --emerald: #22c55e;
       --amber: #f59e0b;
-      --rose: #fb7185;
       --btn-sec-bg: #1e293b;
       --btn-sec-text: #cbd5e1;
       --input-bg: #0f172a;
-      --th-bg: rgba(15, 23, 42, 0.7);
-      --svg-bg: #0f172a;
-      --svg-stroke: #cbd5e1;
-      --svg-accent: #38bdf8;
-      --svg-arrow: #22c55e;
-      --glass-bg: rgba(17, 24, 39, 0.88);
     }
     [data-theme="light"] {
       --bg: #f1f5f9;
@@ -46,16 +39,9 @@
       --sky-text: #ffffff;
       --emerald: #16a34a;
       --amber: #d97706;
-      --rose: #e11d48;
       --btn-sec-bg: #e2e8f0;
       --btn-sec-text: #334155;
       --input-bg: #ffffff;
-      --th-bg: #f1f5f9;
-      --svg-bg: #f1f5f9;
-      --svg-stroke: #334155;
-      --svg-accent: #0284c7;
-      --svg-arrow: #16a34a;
-      --glass-bg: rgba(255, 255, 255, 0.90);
     }
     body {
       background-color: var(--bg);
@@ -64,21 +50,18 @@
       line-height: 1.45;
       padding: 12px;
       padding-top: max(12px, env(safe-area-inset-top));
-      padding-bottom: calc(96px + env(safe-area-inset-bottom));
+      padding-bottom: 40px;
       transition: background-color 0.25s, color 0.25s;
       -webkit-tap-highlight-color: transparent;
     }
-    .container { max-width: 1050px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+    .container { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
     .card {
       background-color: var(--card);
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 16px;
       box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.14);
-      transition: background-color 0.25s, border-color 0.25s;
     }
-
-    /* Header compacto móvil */
     .header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
     .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; align-items: center; }
     .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 9999px; border: 1px solid transparent; }
@@ -88,7 +71,8 @@
     h1 { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; color: var(--text-strong); }
     .subtitle { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
 
-    .header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    button { cursor: pointer; border: none; font-family: inherit; transition: transform 0.1s; }
+    button:active { transform: scale(0.95); }
     .theme-btn {
       background: var(--btn-sec-bg);
       color: var(--text-strong);
@@ -97,126 +81,30 @@
       border-radius: 10px;
       font-size: 13px;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
-
-    button { cursor: pointer; border: none; font-family: inherit; transition: transform 0.1s, opacity 0.15s; }
-    button:active { transform: scale(0.95); }
-    .btn-sec { background: var(--btn-sec-bg); color: var(--btn-sec-text); padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; }
+    .btn-sec { background: var(--btn-sec-bg); color: var(--btn-sec-text); padding: 7px 11px; border-radius: 9px; font-size: 12px; font-weight: 600; }
     .btn-primary { background: var(--sky); color: var(--sky-text); padding: 9px 14px; border-radius: 10px; font-size: 13px; font-weight: 800; }
-    .btn-emerald { background: var(--emerald); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 13.5px; font-weight: 800; width: 100%; }
 
-    /* Historial Semana 1 */
-    .section-title { font-size: 15px; font-weight: 800; color: var(--text-strong); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .section-title { font-size: 16px; font-weight: 800; color: var(--text-strong); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+
+    /* KPIs / Meta */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .kpi-box { background: var(--card-inner); border: 1px solid var(--border); border-radius: 14px; padding: 12px; text-align: center; }
+    .kpi-val { font-size: 20px; font-weight: 900; color: var(--sky); font-family: ui-monospace, monospace; }
+    .kpi-lbl { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+    /* Estructura Semanal */
     .week-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    @media (min-width: 640px) { .week-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; } }
-    .day-box { background: var(--card-inner); border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
+    @media (min-width: 640px) { .week-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; } }
+    .day-box { background: var(--card-inner); border: 1px solid var(--border); border-radius: 12px; padding: 11px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
     .day-done { border-color: rgba(34, 197, 94, 0.5); background: rgba(34, 197, 94, 0.08); }
-    .day-today { border-color: var(--sky); background: rgba(56, 189, 248, 0.12); box-shadow: 0 0 12px rgba(56, 189, 248, 0.15); }
-    .day-name { font-size: 10.5px; font-weight: 800; text-transform: uppercase; }
-    .day-focus { font-size: 13px; font-weight: 700; color: var(--text-strong); }
+    .day-today { border-color: var(--sky); background: rgba(56, 189, 248, 0.12); }
+    .day-name { font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .day-focus { font-size: 13.5px; font-weight: 700; color: var(--text-strong); }
     .day-desc { font-size: 11px; color: var(--muted); }
 
-    /* Tabs Deslizables en iPhone (1 fila limpia) */
-    .tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      flex-wrap: nowrap;
-      padding-bottom: 4px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-    .tabs::-webkit-scrollbar { display: none; }
-    .day-tab {
-      background: var(--btn-sec-bg);
-      color: var(--btn-sec-text);
-      border: 1px solid var(--border);
-      padding: 9px 14px;
-      border-radius: 9999px;
-      font-size: 13px;
-      font-weight: 600;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .day-tab.active-tab { background: var(--sky); color: var(--sky-text); border-color: var(--sky); font-weight: 800; }
-
-    /* Banner Imagen */
-    .hero-banner { width: 100%; height: 135px; border-radius: 14px; overflow: hidden; position: relative; border: 1px solid var(--border); margin-bottom: 14px; background: #0f172a; }
-    @media (min-width: 640px) { .hero-banner { height: 165px; } }
-    .hero-banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
-    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(11, 17, 32, 0.94) 12%, rgba(11, 17, 32, 0.15) 85%); display: flex; flex-direction: column; justify-content: flex-end; padding: 14px; }
-    .hero-title { font-size: 16.5px; font-weight: 800; color: #ffffff; }
-    .hero-sub { font-size: 12px; color: #e2e8f0; }
-
-    /* Tabla (iPad/Desktop) vs Tarjetas (iPhone) */
-    .table-wrap { width: 100%; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-    th { padding: 10px; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); background: var(--th-bg); font-size: 12px; }
-    td { padding: 11px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    .ex-cell { display: flex; align-items: center; gap: 12px; }
-    .ex-svg-box { width: 56px; height: 56px; min-width: 56px; border-radius: 12px; background: var(--svg-bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; padding: 4px; }
-    .ex-svg-box svg { width: 100%; height: 100%; }
-    .ex-name { font-weight: 700; color: var(--text-strong); font-size: 14px; }
-    .ex-muscle { color: var(--muted); font-size: 12px; }
-    .ex-sets { font-family: ui-monospace, monospace; font-weight: 800; color: var(--sky); text-align: center; white-space: nowrap; }
-    .ex-note { color: var(--text); font-size: 12.5px; line-height: 1.4; }
-
-    /* Inputs optimizados para iOS (16px evita auto-zoom en Safari) */
-    .weight-input {
-      width: 74px;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--text-strong);
-      border-radius: 8px;
-      padding: 6px 8px;
-      font-size: 16px;
-      text-align: center;
-      font-family: ui-monospace, monospace;
-      font-weight: 700;
-    }
-    .weight-input:focus { outline: none; border-color: var(--sky); }
-    input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; accent-color: var(--emerald); }
-    .hidden { display: none; }
-
-    /* Transformación Mágica a Tarjetas Nativas en iPhone (<= 680px) */
-    @media (max-width: 680px) {
-      table, thead, tbody, tr, td { display: block; width: 100%; }
-      thead { display: none; }
-      tbody { display: flex; flex-direction: column; gap: 12px; }
-      tr {
-        background: var(--card-inner);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 12px;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        grid-template-areas:
-          "info check"
-          "sets weight"
-          "note note";
-        gap: 10px;
-        align-items: center;
-        transition: border-color 0.2s, background-color 0.2s;
-      }
-      tr.row-completed {
-        border-color: rgba(34, 197, 94, 0.5);
-        background: rgba(34, 197, 94, 0.06);
-      }
-      td { padding: 0; border: none; }
-      td:nth-child(1) { grid-area: info; }
-      td:nth-child(2) { grid-area: sets; text-align: left !important; font-size: 13.5px; }
-      td:nth-child(2)::before { content: "Meta: "; color: var(--muted); font-weight: 600; font-family: inherit; }
-      td:nth-child(3) { grid-area: weight; text-align: right !important; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
-      td:nth-child(3)::before { content: "Peso:"; font-size: 12px; color: var(--muted); font-weight: 600; }
-      td:nth-child(4) { grid-area: note; border-top: 1px solid var(--border); padding-top: 8px; font-size: 12px; color: var(--muted); }
-      td:nth-child(5) { grid-area: check; }
-    }
-
-    /* Formularios */
-    .log-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    /* Registro de Comidas */
+    .log-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .log-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .log-input {
       background: var(--input-bg);
@@ -239,56 +127,15 @@
       align-items: center;
       font-size: 13px;
       color: var(--text-strong);
+      gap: 8px;
     }
 
-    /* Catálogo */
-    .catalog-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center; }
-    .filter-chips { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; scrollbar-width: none; }
-    .filter-chips::-webkit-scrollbar { display: none; }
-    .filter-chip { background: var(--btn-sec-bg); color: var(--btn-sec-text); border: 1px solid var(--border); padding: 7px 14px; border-radius: 9999px; font-size: 12.5px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
-    .filter-chip.active-chip { background: var(--sky); color: var(--sky-text); border-color: var(--sky); font-weight: 800; }
-    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-    .catalog-card { background: var(--card-inner); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
-    .catalog-top { display: flex; gap: 12px; align-items: flex-start; }
-
-    /* Info Cards */
-    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
-    .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; font-size: 12px; color: var(--text); }
-    .info-card h4 { font-size: 13.5px; font-weight: 800; margin-bottom: 4px; }
-
-    /* Barra Flotante Inferior iOS (Cronómetro + Progreso siempre a la mano) */
-    .floating-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--glass-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-top: 1px solid var(--border);
-      padding: 10px 14px;
-      padding-bottom: max(10px, env(safe-area-inset-bottom));
-      z-index: 50;
-      box-shadow: 0 -8px 25px rgba(0,0,0,0.25);
-    }
-    .floating-inner {
-      max-width: 1050px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-    .progress-pill { display: flex; flex-direction: column; gap: 3px; min-width: 105px; }
-    .progress-text { font-size: 11px; font-weight: 700; color: var(--text-strong); }
-    .progress-track { width: 100%; height: 6px; background: var(--border); border-radius: 9999px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--emerald); width: 0%; transition: width 0.3s ease; }
-
-    .float-timer { display: flex; align-items: center; gap: 8px; }
-    .timer-display { font-size: 20px; font-family: ui-monospace, monospace; font-weight: 900; color: var(--sky); min-width: 62px; text-align: center; }
-    .float-btns { display: flex; gap: 5px; }
-    .float-btn-sm { background: var(--btn-sec-bg); color: var(--btn-sec-text); padding: 7px 9px; border-radius: 8px; font-size: 12px; font-weight: 700; }
-    .float-btn-go { background: var(--sky); color: var(--sky-text); padding: 7px 13px; border-radius: 8px; font-size: 12.5px; font-weight: 800; }
+    /* Historial de Marcas */
+    .records-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+    .record-card { background: var(--card-inner); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .record-title { font-weight: 800; font-size: 13.5px; color: var(--text-strong); }
+    .record-val { font-size: 12.5px; color: var(--sky); font-weight: 700; margin-top: 3px; font-family: ui-monospace, monospace; }
+    .record-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -298,26 +145,61 @@
     <header class="card header">
       <div>
         <div class="badges">
-          <span class="badge badge-emerald">Meta: 84 kg → 80 kg</span>
-          <span class="badge badge-sky">44 años • 190 cm</span>
+          <span class="badge badge-emerald">Hevy + ChatGPT Sync</span>
           <span class="badge badge-offline" id="offlineStatus">⚡ Offline Listo</span>
         </div>
-        <h1>🏋️‍♂️ Mi Plan GYM</h1>
-        <p class="subtitle">Sincronizado con ENTRENAMIENTO.md (Hevy & ChatGPT)</p>
+        <h1>📊 Dashboard GYM & Comidas</h1>
+        <p class="subtitle">Resumen de lo logrado • Registro diario de alimentación</p>
       </div>
-      <div class="header-actions">
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button onclick="exportForChatGPT()" class="btn-primary">📋 Copiar para ChatGPT</button>
         <button onclick="toggleTheme()" id="themeToggleBtn" class="theme-btn">☀️ Claro</button>
       </div>
     </header>
 
-    <!-- Historial Semana Actual -->
+    <!-- Objetivo & Métricas -->
+    <section class="kpi-grid">
+      <div class="kpi-box">
+        <div class="kpi-val">84 kg</div>
+        <div class="kpi-lbl">Peso Actual</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val" style="color: var(--emerald);">80 kg</div>
+        <div class="kpi-lbl">Meta (Músculo)</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val" style="color: var(--amber);">190 cm</div>
+        <div class="kpi-lbl">44 años</div>
+      </div>
+    </section>
+
+    <!-- Registro de Comidas (Principal) -->
     <section class="card">
-      <div class="section-title"><span>📊</span> Estructura Semanal (Actualizado: Dom 22 Nov)</div>
+      <div class="log-header">
+        <div class="section-title" style="margin-bottom:0;"><span>🍽️</span> Registro de Comidas</div>
+        <span style="font-size:11px; color:var(--muted);">Guardado automático en dispositivo</span>
+      </div>
+      <div class="log-form">
+        <select id="mealType" class="log-input" style="max-width: 155px;">
+          <option value="🍳 Desayuno">🍳 Desayuno</option>
+          <option value="🍗 Comida">🍗 Comida</option>
+          <option value="🥗 Cena">🥗 Cena</option>
+          <option value="🍎 Snack">🍎 Snack</option>
+        </select>
+        <input type="text" id="mealText" class="log-input" placeholder="Ej: 2 huevos tibios, yogur de mango...">
+        <button onclick="addMeal()" class="btn-primary">+ Registrar</button>
+      </div>
+      <div id="mealList" class="log-list"></div>
+    </section>
+
+    <!-- Estructura Semanal (Hevy) -->
+    <section class="card">
+      <div class="section-title"><span>🗓️</span> Plan Semanal (Ejecución en Hevy)</div>
       <div class="week-grid">
         <div class="day-box day-today">
-          <span class="day-name" style="color: var(--sky);">🏃 Lunes (Mañana)</span>
+          <span class="day-name" style="color: var(--sky);">🏃 Lunes</span>
           <span class="day-focus">Cardio / Core</span>
-          <span class="day-desc">Opcional en GYM</span>
+          <span class="day-desc">Opcional en GYM o Casa</span>
         </div>
         <div class="day-box">
           <span class="day-name" style="color: var(--muted);">🦵 Martes</span>
@@ -329,6 +211,16 @@
           <span class="day-focus">Pecho y Espalda</span>
           <span class="day-desc">Torso completo</span>
         </div>
+        <div class="day-box">
+          <span class="day-name" style="color: var(--muted);">🔥 Jueves</span>
+          <span class="day-focus">Hombros y Brazos</span>
+          <span class="day-desc">Rutina en Hevy</span>
+        </div>
+        <div class="day-box">
+          <span class="day-name" style="color: var(--muted);">🛌 Viernes</span>
+          <span class="day-focus">Descanso</span>
+          <span class="day-desc">Recuperación</span>
+        </div>
         <div class="day-box day-done">
           <span class="day-name" style="color: var(--emerald);">✓ Sábado 21 Nov</span>
           <span class="day-focus">En Casa ✓</span>
@@ -337,483 +229,58 @@
       </div>
     </section>
 
-    <!-- Pestañas Deslizables Horizontales -->
-    <div class="tabs">
-      <button onclick="showDay('encasa')" id="tab-encasa" class="day-tab active-tab">🏠 Sáb 21: En Casa ✓</button>
-      <button onclick="showDay('lunes')" id="tab-lunes" class="day-tab">🏃 Lunes: Cardio & Core</button>
-      <button onclick="showDay('piernaa')" id="tab-piernaa" class="day-tab">🦵 Martes: Pierna (Lau)</button>
-      <button onclick="showDay('empuje')" id="tab-empuje" class="day-tab">🛡️ Mié: Pecho & Espalda</button>
-      <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab">🔥 Jue: Hombro & Brazos</button>
-      <button onclick="showDay('comidas')" id="tab-comidas" class="day-tab">🍽️ Comidas</button>
-      <button onclick="showDay('catalogo')" id="tab-catalogo" class="day-tab">📚 Catálogo (24)</button>
-    </div>
-
-    <!-- Contenido Dinámico -->
-    <div class="card">
-
-      <!-- JUEVES (COMPLETADO) -->
-      <div id="content-hoy" class="day-content hidden">
-        <div class="hero-banner">
-          <img src="./img/espalda_brazos.png" alt="Espalda, Hombros y Brazos" onerror="this.style.display='none'">
-          <div class="hero-overlay">
-            <div class="hero-title">✓ Jueves: Hombros, Brazos & Jalón</div>
-            <div class="hero-sub">Sesión completada (también armada en Hevy).</div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
-            </thead>
-            <tbody id="tbody-hoy"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- HOY SÁBADO: EN CASA -->
-      <div id="content-encasa" class="day-content">
-        <div class="hero-banner">
-          <img src="./img/pierna.png" alt="Entreno en Casa Pierna y Abdomen" onerror="this.style.display='none'">
-          <div class="hero-overlay">
-            <div class="hero-title">🏠 HOY Sábado: En Casa (Pierna, Glúteo & Abdomen)</div>
-            <div class="hero-sub">Mancuernas de 15 kg y 25 kg • Sin saltos • Amigable con el estómago.</div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
-            </thead>
-            <tbody id="tbody-encasa"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- LUNES: CARDIO & CORE -->
-      <div id="content-lunes" class="day-content hidden">
-        <div class="hero-banner">
-          <img src="./img/espalda_brazos.png" alt="Cardio y Core" onerror="this.style.display='none'">
-          <div class="hero-overlay">
-            <div class="hero-title">🏃 Lunes: Cardio / Core Opcional en GYM</div>
-            <div class="hero-sub">Acondicionamiento suave para arrancar la semana sin fatigar piernas antes del martes con Lau.</div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
-            </thead>
-            <tbody id="tbody-lunes"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- HOY VIERNES: PIERNA B -->
-      <div id="content-piernab" class="day-content hidden">
-        <div class="hero-banner">
-          <img src="./img/pierna.png" alt="Pierna B" onerror="this.style.display='none'">
-          <div class="hero-overlay">
-            <div class="hero-title">🔥 HOY Viernes: Pierna B (Femoral & Glúteo)</div>
-            <div class="hero-sub">Cadena posterior completa tras 72h de descanso desde el martes.</div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
-            </thead>
-            <tbody id="tbody-piernab"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- SEMANA 2 - PIERNA A -->
-      <div id="content-piernaa" class="day-content hidden">
-        <div class="hero-banner">
-          <img src="./img/pierna.png" alt="Pierna A" onerror="this.style.display='none'">
-          <div class="hero-overlay">
-            <div class="hero-title">🦵 Martes: Pierna A (con Lau)</div>
-            <div class="hero-sub">Cuádriceps, Glúteo y Gemelos — fijo cada martes con Laura.</div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
-            </thead>
-            <tbody id="tbody-piernaa"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- SEMANA 2 - EMPUJE -->
-      <div id="content-empuje" class="day-content hidden">
-        <div class="hero-banner">
-          <img src="./img/empuje.png" alt="Empuje" onerror="this.style.display='none'">
-          <div class="hero-overlay">
-            <div class="hero-title">🛡️ Lunes: Torso A / Empuje (Pecho, Hombro & Tríceps)</div>
-            <div class="hero-sub">Arranca la semana arriba para llegar fresco a pierna el martes con Lau.</div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
-            </thead>
-            <tbody id="tbody-empuje"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- SEMANA 2 - ESPALDA -->
-      <div id="content-espalda" class="day-content hidden">
-        <div class="hero-banner">
-          <img src="./img/espalda_brazos.png" alt="Espalda" onerror="this.style.display='none'">
-          <div class="hero-overlay">
-            <div class="hero-title">🦅 Espalda, Posterior y Bíceps (Jalón)</div>
-            <div class="hero-sub">Día 3 estándar de tu rutina semanal.</div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Ejercicio</th><th style="text-align:center;">Series</th><th style="text-align:center;">Peso (kg)</th><th>Técnica Clave</th><th style="text-align:center;">Hecho</th></tr>
-            </thead>
-            <tbody id="tbody-espalda"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- COMIDAS -->
-      <div id="content-comidas" class="day-content hidden">
-        <div class="section-title" style="margin-bottom: 4px;"><span>🍽️</span> Registro de Comidas (Offline)</div>
-        <p class="subtitle" style="margin-bottom: 12px;">Meta: 84 kg → 80 kg conservando músculo. Registra tus comidas y compártelas con ChatGPT.</p>
-        <div class="log-form">
-          <select id="mealType" class="log-input" style="max-width: 150px;">
-            <option value="🍳 Desayuno">🍳 Desayuno</option>
-            <option value="🍗 Comida">🍗 Comida</option>
-            <option value="🥗 Cena">🥗 Cena</option>
-            <option value="🍎 Snack">🍎 Snack</option>
-          </select>
-          <input type="text" id="mealText" class="log-input" placeholder="Ej: 2 huevos tibios, 1 yogur de mango...">
-          <button onclick="addMeal()" class="btn-primary">+ Registrar</button>
-        </div>
-        <div id="mealList" class="log-list"></div>
-      </div>
-
-      <!-- CATÁLOGO DE EJERCICIOS -->
-      <div id="content-catalogo" class="day-content hidden">
-        <div class="section-title" style="margin-bottom: 4px;"><span>📚</span> Catálogo de Ejercicios</div>
-        <p class="subtitle" style="margin-bottom: 12px;">Busca cualquier ejercicio y envíalo con un toque a tu rutina.</p>
-        <div class="catalog-controls">
-          <input type="text" id="catalogSearch" class="log-input" placeholder="🔍 Buscar (ej. Hip Thrust, Remo...)" oninput="renderCatalog()">
-          <select id="catalogTargetDay" class="log-input" style="max-width: 240px;">
-            <option value="hoy">Enviar a: 🔥 HOY Jueves</option>
-            <option value="piernab">Enviar a: ⚡ Viernes Pierna B</option>
-            <option value="piernaa">Enviar a: 🦵 Sem 2 Pierna A</option>
-            <option value="empuje">Enviar a: 🛡️ Sem 2 Empuje</option>
-            <option value="espalda">Enviar a: 🦅 Sem 2 Espalda</option>
-          </select>
-        </div>
-        <div class="filter-chips" id="catalogFilters">
-          <button onclick="setCatFilter('Todos', this)" class="filter-chip active-chip">Todos</button>
-          <button onclick="setCatFilter('Pecho', this)" class="filter-chip">Pecho</button>
-          <button onclick="setCatFilter('Espalda', this)" class="filter-chip">Espalda</button>
-          <button onclick="setCatFilter('Pierna', this)" class="filter-chip">Pierna & Glúteo</button>
-          <button onclick="setCatFilter('Hombro', this)" class="filter-chip">Hombros</button>
-          <button onclick="setCatFilter('Brazos', this)" class="filter-chip">Brazos</button>
-          <button onclick="setCatFilter('Core', this)" class="filter-chip">Core</button>
-        </div>
-        <div id="catalogGrid" class="catalog-grid"></div>
-      </div>
-
-      <!-- Acciones del Día + Agregar Ejercicio -->
-      <div id="customExFormBox" style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px;">
-        <button onclick="finishWorkout()" class="btn-emerald">✅ Finalizar Entreno de Hoy (Guardar en Bitácora y Limpiar Checks)</button>
-        <div>
-          <div style="font-size: 13px; font-weight: 800; color: var(--text-strong); margin-bottom: 8px;">➕ ¿Te pusieron otro ejercicio? Agrégalo aquí:</div>
-          <div class="log-form" style="margin-bottom: 0;">
-            <input type="text" id="newExName" class="log-input" placeholder="Nombre (ej. Pullover polea)">
-            <input type="text" id="newExMuscle" class="log-input" style="max-width: 150px;" placeholder="Músculo">
-            <input type="text" id="newExSets" class="log-input" style="max-width: 120px;" placeholder="3 x 12">
-            <select id="newExSvg" class="log-input" style="max-width: 170px;">
-              <option value="lat_pulldown">🖼️ Polea / Jalón</option>
-              <option value="bench_press">🖼️ Pecho / Barra</option>
-              <option value="shoulder_press">🖼️ Hombro / Press</option>
-              <option value="bicep_curl">🖼️ Brazos / Mancuerna</option>
-              <option value="leg_press">🖼️ Pierna / Prensa</option>
-              <option value="rdl">🖼️ Peso Muerto / Femoral</option>
-              <option value="plank">🖼️ Abdomen / Core</option>
-            </select>
-            <input type="text" id="newExNote" class="log-input" placeholder="Nota técnica (opcional)">
-            <button onclick="addCustomExercise()" class="btn-primary">+ Agregar</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Bitácora Personal -->
+    <!-- Dashboard de Lo Que Hemos Hecho (Marcas Reales) -->
     <section class="card">
-      <div class="log-header">
-        <div class="section-title" style="margin-bottom:0;"><span>📝</span> Bitácora & Puente ChatGPT</div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button onclick="exportForChatGPT()" class="btn-primary" style="font-size:12px; padding:6px 10px;">📋 Copiar para ChatGPT</button>
-          <button onclick="restoreDefaultLogs()" class="btn-sec" style="font-size:12px;">↺ Restaurar Semana</button>
+      <div class="section-title"><span>🏆</span> Marcas Recientes (Sábado 21 Nov — En Casa)</div>
+      <div class="records-grid">
+        <div class="record-card">
+          <div class="record-title">Goblet Squat</div>
+          <div class="record-val">15 kg × 12 • 25 kg × 12</div>
+          <div class="record-date">3 series</div>
+        </div>
+        <div class="record-card">
+          <div class="record-title">Peso Muerto Rumano (2 manc.)</div>
+          <div class="record-val">15 kg × 12</div>
+          <div class="record-date">3 series</div>
+        </div>
+        <div class="record-card">
+          <div class="record-title">Zancada Inversa</div>
+          <div class="record-val">15 kg × 10</div>
+          <div class="record-date">3 series</div>
+        </div>
+        <div class="record-card">
+          <div class="record-title">Puente de Glúteo</div>
+          <div class="record-val">15 kg × 15 • 25 kg × 16</div>
+          <div class="record-date">3 series</div>
+        </div>
+        <div class="record-card">
+          <div class="record-title">Gemelos</div>
+          <div class="record-val">15 kg × 18</div>
+          <div class="record-date">3 series</div>
+        </div>
+        <div class="record-card">
+          <div class="record-title">Core & Cuerda</div>
+          <div class="record-val">Dead bug 3×10 • Plancha 35s</div>
+          <div class="record-date">Bird dog 2×10 • Cuerda 6 min</div>
         </div>
       </div>
-      <div class="log-form">
-        <input type="text" id="logText" class="log-input" placeholder="Nota rápida de entrenamiento...">
-        <button onclick="addLog()" class="btn-primary">+ Guardar</button>
-      </div>
-      <div id="logList" class="log-list"></div>
     </section>
 
-    <!-- Reglas de Oro -->
-    <div class="info-grid">
-      <div class="info-card">
-        <h4 style="color: var(--amber);">🎯 Regla RIR 2 (Semanas 1–3)</h4>
-        <p>Termina cada serie sintiendo que podías hacer <strong>2 repeticiones más</strong> limpias.</p>
+    <!-- Historial de Sesiones -->
+    <section class="card">
+      <div class="section-title"><span>📝</span> Historial de Sesiones</div>
+      <div class="log-list">
+        <div class="log-item"><span>✅ <strong>Sáb 21 Nov</strong> — Pierna, Glúteo y Abdomen en Casa (Goblet 25 kg, Puente 25 kg, Cuerda 6m)</span></div>
+        <div class="log-item"><span>✅ <strong>Jue 12 Nov</strong> — Hombro, Brazos y Jalón (Hevy)</span></div>
+        <div class="log-item"><span>✅ <strong>Mié 11 Nov</strong> — Pecho y Espalda (Remo)</span></div>
+        <div class="log-item"><span>✅ <strong>Mar 10 Nov</strong> — Pierna general (Inicio)</span></div>
       </div>
-      <div class="info-card">
-        <h4 style="color: var(--sky);">⏳ Tempo Controlado 2-0-2</h4>
-        <p>2 segundos en bajar el peso controlado y 2 segundos en subir.</p>
-      </div>
-      <div class="info-card">
-        <h4 style="color: var(--emerald);">🔊 Alerta Sonora + Offline</h4>
-        <p>Al terminar el descanso suena un doble tono y la app funciona sin señal.</p>
-      </div>
-    </div>
+    </section>
 
-  </div>
-
-  <!-- Barra Flotante Inferior iOS (Siempre visible en iPhone) -->
-  <div class="floating-bar">
-    <div class="floating-inner">
-      <div class="progress-pill">
-        <div class="progress-text" id="progressText">0 / 0 listos</div>
-        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      </div>
-      <div class="float-timer">
-        <div id="timerDisplay" class="timer-display">01:00</div>
-        <div class="float-btns">
-          <button onclick="setTimer(60)" class="float-btn-sm">60s</button>
-          <button onclick="setTimer(90)" class="float-btn-sm">90s</button>
-          <button id="startTimerBtn" onclick="toggleTimer()" class="float-btn-go">▶</button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <script>
-    const SVGS = {
-      lat_pulldown: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="12" x2="52" y2="12" stroke="var(--svg-accent)" stroke-width="3"/><line x1="32" y1="4" x2="32" y2="12" stroke="var(--svg-accent)"/><circle cx="32" cy="24" r="5"/><path d="M18 12 L24 30 L40 30 L46 12"/><line x1="32" y1="30" x2="32" y2="48"/><path d="M22 48 L42 48 L44 58" /><path d="M32 16 L32 21" stroke="var(--svg-arrow)" stroke-width="2"/><path d="M29 19 L32 22 L35 19" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      shoulder_press: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="22" r="5"/><path d="M22 32 L32 29 L42 32 L42 46 L22 46 Z"/><rect x="12" y="14" width="10" height="5" rx="2" fill="var(--svg-accent)" stroke="none"/><rect x="42" y="14" width="10" height="5" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M17 19 L17 30 L22 32"/><path d="M47 19 L47 30 L42 32"/><path d="M17 11 L17 7 M14 9 L17 6 L20 9" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      lateral_raise: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="14" r="5"/><line x1="32" y1="19" x2="32" y2="40"/><path d="M26 40 L24 58 M38 40 L40 58"/><path d="M10 24 L32 24 L54 24"/><rect x="6" y="21" width="6" height="6" rx="1.5" fill="var(--svg-accent)" stroke="none"/><rect x="52" y="21" width="6" height="6" rx="1.5" fill="var(--svg-accent)" stroke="none"/><path d="M12 34 Q10 28 11 26" stroke="var(--svg-arrow)" stroke-width="2"/><path d="M52 34 Q54 28 53 26" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      face_pull: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="10" x2="8" y2="56" stroke="var(--muted)"/><line x1="8" y1="22" x2="34" y2="22" stroke="var(--svg-accent)" stroke-dasharray="3 2"/><circle cx="44" cy="20" r="5"/><line x1="44" y1="25" x2="46" y2="44"/><path d="M46 44 L40 58 M46 44 L52 58"/><path d="M32 22 L40 27 L44 26"/><path d="M24 17 L32 17 M29 14 L33 17 L29 20" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      bicep_curl: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="28" cy="14" r="5"/><line x1="28" y1="19" x2="28" y2="40"/><path d="M24 40 L22 58 M32 40 L34 58"/><path d="M28 24 L28 36 L42 26"/><rect x="39" y="21" width="8" height="6" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M42 36 Q47 31 44 27" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      tricep_rope: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="8" x2="12" y2="58" stroke="var(--muted)"/><line x1="12" y1="12" x2="26" y2="34" stroke="var(--svg-accent)"/><circle cx="38" cy="16" r="5"/><line x1="38" y1="21" x2="38" y2="42"/><path d="M34 42 L32 58 M42 42 L44 58"/><path d="M38 24 L32 32 L22 44"/><path d="M22 36 L22 44 M19 41 L22 45 L25 41" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      plank: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="48" x2="58" y2="48" stroke="var(--muted)"/><circle cx="14" cy="30" r="4.5"/><path d="M18 32 L44 38 L54 46"/><path d="M18 34 L16 46 L22 46"/><line x1="26" y1="30" x2="40" y2="33" stroke="var(--svg-arrow)" stroke-width="2.5"/></svg>`,
-      rdl: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="44" cy="20" r="5"/><path d="M40 24 L24 34 L28 54"/><path d="M24 34 L22 54"/><path d="M38 25 L36 42"/><rect x="31" y="42" width="10" height="5" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M18 34 L12 34 M15 31 L11 34 L15 37" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      leg_curl: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="42" x2="50" y2="42" stroke="var(--muted)" stroke-width="3"/><circle cx="16" cy="34" r="4.5"/><path d="M20 36 L40 36 L48 22"/><circle cx="48" cy="22" r="4" fill="var(--svg-accent)" stroke="none"/><path d="M52 34 Q54 27 50 23" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      leg_press: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 46 L26 46 L18 28" stroke="var(--muted)" stroke-width="3"/><circle cx="18" cy="24" r="4.5"/><path d="M20 30 L28 42 L44 26"/><line x1="42" y1="16" x2="52" y2="28" stroke="var(--svg-accent)" stroke-width="4"/><path d="M36 22 L42 16 M38 15 L43 15 L43 20" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      lunges: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="14" r="5"/><line x1="32" y1="19" x2="32" y2="36"/><path d="M32 36 L44 36 L44 54"/><path d="M32 36 L20 48 L14 54"/><rect x="26" y="30" width="4" height="8" rx="1" fill="var(--svg-accent)" stroke="none"/><path d="M32 42 L32 50 M29 47 L32 51 L35 47" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      calf_raise: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="50" width="28" height="6" rx="2" fill="var(--muted)" stroke="none"/><circle cx="32" cy="12" r="4.5"/><line x1="32" y1="17" x2="32" y2="34"/><path d="M28 34 L28 48 L32 50 M36 34 L36 48 L40 50"/><path d="M44 26 L44 16 M41 19 L44 15 L47 19" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      leg_ext: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20 L16 42 L34 42" stroke="var(--muted)" stroke-width="3"/><circle cx="22" cy="20" r="4.5"/><path d="M22 25 L22 38 L46 34"/><circle cx="46" cy="34" r="4" fill="var(--svg-accent)" stroke="none"/><path d="M42 46 Q48 42 48 37" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      goblet_squat: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="18" r="5"/><path d="M32 23 L28 40 L20 44 L22 56"/><path d="M28 40 L40 44 L38 56"/><rect x="35" y="23" width="7" height="9" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M14 26 L14 38 M11 35 L14 39 L17 35" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      bench_press: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="42" x2="54" y2="42" stroke="var(--muted)" stroke-width="3"/><circle cx="16" cy="34" r="4.5"/><path d="M20 38 L42 38 L48 52"/><line x1="28" y1="38" x2="28" y2="20"/><line x1="18" y1="20" x2="38" y2="20" stroke="var(--svg-accent)" stroke-width="3.5"/><path d="M28 14 L28 8 M25 11 L28 7 L31 11" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      pec_deck: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="20" r="5"/><path d="M24 28 L40 28 L40 46 L24 46 Z"/><path d="M24 28 L12 24 L18 16" stroke="var(--svg-accent)"/><path d="M40 28 L52 24 L46 16" stroke="var(--svg-accent)"/><path d="M20 14 L28 14 M36 14 L44 14" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      cable_row: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="12" x2="8" y2="54" stroke="var(--muted)"/><line x1="8" y1="38" x2="28" y2="34" stroke="var(--svg-accent)"/><circle cx="42" cy="20" r="5"/><path d="M42 25 L40 44 L22 46"/><path d="M40 30 L28 34"/><path d="M26 27 L34 27 M31 24 L35 27 L31 30" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      db_row: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="42" x2="48" y2="42" stroke="var(--muted)" stroke-width="3"/><circle cx="44" cy="24" r="4.5"/><path d="M40 28 L20 32 L20 42"/><path d="M20 32 L18 54"/><path d="M36 29 L36 46"/><rect x="31" y="46" width="10" height="5" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M44 42 L44 33 M41 36 L44 32 L47 36" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      glute_bridge: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="48" x2="58" y2="48" stroke="var(--muted)"/><circle cx="14" cy="42" r="4.5"/><path d="M18 44 L36 30 L48 48"/><rect x="30" y="25" width="9" height="6" rx="2" fill="var(--svg-accent)" stroke="none"/><path d="M35 20 L35 13 M32 16 L35 12 L38 16" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`,
-      dead_bug: `<svg viewBox="0 0 64 64" fill="none" stroke="var(--svg-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="48" x2="58" y2="48" stroke="var(--muted)"/><circle cx="14" cy="40" r="4.5"/><path d="M18 44 L40 44"/><path d="M22 44 L18 24" stroke="var(--svg-accent)"/><path d="M40 44 L42 28 L52 28"/><path d="M48 22 L54 22 M51 19 L55 22 L51 25" stroke="var(--svg-arrow)" stroke-width="2"/></svg>`
-    };
-
-    const DAY_LABELS = {
-      encasa: 'En Casa (Pierna/Glúteo/Abd)',
-      lunes: 'Lunes (Cardio & Core)',
-      hoy: 'Jueves (Hombro/Brazos)',
-      piernab: 'Viernes (Pierna B)',
-      piernaa: 'Martes Pierna A (Lau)',
-      empuje: 'Miércoles (Pecho & Espalda)',
-      espalda: 'Espalda & Bíceps'
-    };
-
-    const ROUTINES = {
-      encasa: [
-        { id: 'ec-1', svg: 'goblet_squat', name: '1. Goblet Squat', muscle: 'Cuádriceps y Glúteo', sets: '15×12, 15×12, 25×12', note: 'Registro Sáb 21 Nov: ¡subiste a 25 kg en la 3ra serie!' },
-        { id: 'ec-2', svg: 'rdl', name: '2. Peso Muerto Rumano (2 manc.)', muscle: 'Femoral y Glúteo', sets: '3 x 12 (15 kg)', note: 'Registro Sáb 21 Nov: 15 kg × 12 × 3 series.' },
-        { id: 'ec-3', svg: 'lunges', name: '3. Zancada Inversa', muscle: 'Pierna Global', sets: '3 x 10 (15 kg)', note: 'Registro Sáb 21 Nov: 15 kg × 10 × 3 series.' },
-        { id: 'ec-4', svg: 'glute_bridge', name: '4. Puente de Glúteo', muscle: 'Glúteo Mayor', sets: '15×15, 25×16 (x2)', note: 'Registro Sáb 21 Nov: 15 kg × 15; 25 kg × 16 × 2 series.' },
-        { id: 'ec-5', svg: 'calf_raise', name: '5. Gemelos', muscle: 'Pantorrilla', sets: '3 x 18 (15 kg)', note: 'Registro Sáb 21 Nov: 15 kg × 18 × 3 series.' },
-        { id: 'ec-6', svg: 'dead_bug', name: '6. Dead Bug', muscle: 'Abdomen Profundo', sets: '3 x 10', note: 'Registro Sáb 21 Nov: 3 × 10.' },
-        { id: 'ec-7', svg: 'plank', name: '7. Plancha + Bird Dog + Cuerda', muscle: 'Core & Cardio', sets: '32-35s | 2×10 | 6m', note: 'Plancha 32s, 34s, 35s • Bird dog 2×10 • Cuerda 6 minutos.' }
-      ],
-      lunes: [
-        { id: 'lu-1', svg: 'plank', name: '1. Cuerda / Caminadora', muscle: 'Cardio Moderado', sets: '8–10 min (o 20m GYM)', note: 'En casa: 8–10 min cuerda. En GYM: 20 min cardio suave para llegar bien al martes.' },
-        { id: 'lu-2', svg: 'lunges', name: '2. Burpees (Alt. en casa)', muscle: 'Acondicionamiento', sets: '2 x 8 reps', note: 'Descansa 2 min y NO llegues al fallo.' },
-        { id: 'lu-3', svg: 'dead_bug', name: '3. Dead Bug', muscle: 'Core Profundo', sets: '3 x 10 c/ lado', note: 'Espalda baja pegada al piso.' },
-        { id: 'lu-4', svg: 'plank', name: '4. Bird Dog', muscle: 'Estabilidad Lumbar', sets: '3 x 10 c/ lado', note: 'Extiende brazo y pierna contraria sin arquear espalda.' },
-        { id: 'lu-5', svg: 'plank', name: '5. Plancha Abdominal', muscle: 'Core', sets: '3 x 35 seg', note: 'Aprieta glúteos y abdomen.' },
-        { id: 'lu-6', svg: 'dead_bug', name: '6. Crunch Invertido', muscle: 'Abdomen Inferior', sets: '3 x 12', note: 'Lleva rodillas al pecho controlando el descenso.' }
-      ],
-      hoy: [
-        { id: 'hoy-1', svg: 'lat_pulldown', name: '1. Jalón al Pecho en Polea', muscle: 'Dorsal Ancho', sets: '4 x 10–12', note: 'Agarre neutro o abierto, jala llevando los codos hacia las costillas.' },
-        { id: 'hoy-2', svg: 'shoulder_press', name: '2. Press Militar Mancuernas', muscle: 'Hombro Anterior', sets: '3 x 10–12', note: 'Sentado casi recto. Baja a la altura de tus orejas.' },
-        { id: 'hoy-3', svg: 'lateral_raise', name: '3. Elevaciones Laterales', muscle: 'Deltoides Lateral', sets: '4 x 12–15', note: 'Peso moderado. Sube sin encoger el cuello.' },
-        { id: 'hoy-4', svg: 'face_pull', name: '4. Face Pull en Polea Alta', muscle: 'Hombro Posterior', sets: '3 x 15', note: 'Jala la cuerda hacia tu frente separando las manos.' },
-        { id: 'hoy-5', svg: 'bicep_curl', name: '5. Curl de Bíceps Barra Z', muscle: 'Bíceps Braquial', sets: '3 x 10–12', note: 'Codos fijos pegados al costado, sin columpiar.' },
-        { id: 'hoy-6', svg: 'tricep_rope', name: '6. Extensión Tríceps Cuerda', muscle: 'Tríceps', sets: '3 x 12–15', note: 'Abre la cuerda hacia afuera abajo y controla subida.' },
-        { id: 'hoy-7', svg: 'plank', name: '7. Plancha Abdominal', muscle: 'Core Profundo', sets: '3 x 35–45s', note: 'Aprieta abdomen y glúteos manteniendo espalda recta.' }
-      ],
-      piernab: [
-        { id: 'pb-1', svg: 'rdl', name: '1. Peso Muerto Rumano', muscle: 'Isquios y Glúteo', sets: '4 x 10–12', note: 'Rodillas semi-fijas. Empuja la cadera atrás sintiendo estirón femoral.' },
-        { id: 'pb-2', svg: 'leg_curl', name: '2. Curl Femoral Máquina', muscle: 'Isquios Aislados', sets: '4 x 10–12', note: 'Frena el regreso del peso en 2 segundos completos.' },
-        { id: 'pb-3', svg: 'leg_press', name: '3. Prensa (Pies altos)', muscle: 'Glúteo y Aductores', sets: '3 x 12', note: 'Pies arriba en la plataforma para enfocar glúteos e isquios.' },
-        { id: 'pb-4', svg: 'lunges', name: '4. Zancadas / Desplantes', muscle: 'Pierna Global', sets: '3 x 10 c/ lado', note: 'Paso largo y controlado, baja verticalmente.' },
-        { id: 'pb-5', svg: 'calf_raise', name: '5. Gemelos en Máquina', muscle: 'Pantorrilla', sets: '4 x 15', note: 'Pausa de 1 seg arriba y estiramiento completo abajo.' }
-      ],
-      piernaa: [
-        { id: 'pa-1', svg: 'leg_press', name: '1. Prensa de Piernas 45°', muscle: 'Cuádriceps / Glúteo', sets: '4 x 10–12', note: 'Pies al centro anchura hombros. No despegues espalda baja.' },
-        { id: 'pa-2', svg: 'leg_ext', name: '2. Extensión Cuádriceps', muscle: 'Cuádriceps', sets: '3 x 12–15', note: '1 seg de contracción arriba.' },
-        { id: 'pa-3', svg: 'goblet_squat', name: '3. Sentadilla Goblet', muscle: 'Pierna y Core', sets: '3 x 10–12', note: 'Torso vertical, profundidad cómoda.' },
-        { id: 'pa-4', svg: 'leg_curl', name: '4. Curl Femoral Acostado', muscle: 'Femoral', sets: '3 x 12', note: 'Controla la bajada.' },
-        { id: 'pa-5', svg: 'calf_raise', name: '5. Gemelos en Máquina', muscle: 'Pantorrilla', sets: '4 x 15', note: 'Sin rebotar.' }
-      ],
-      empuje: [
-        { id: 'em-1', svg: 'bench_press', name: '1. Press de Banca Plano', muscle: 'Pectoral Mayor', sets: '4 x 10–12', note: 'Escápulas retraídas, codos a 45°.' },
-        { id: 'em-2', svg: 'bench_press', name: '2. Press Inclinado Manc.', muscle: 'Pecho Superior', sets: '3 x 10–12', note: 'Banco a 30°. Controla el descenso.' },
-        { id: 'em-3', svg: 'pec_deck', name: '3. Pec-Deck / Aperturas', muscle: 'Pecho Aislamiento', sets: '3 x 12–15', note: 'Aprieta 1 seg al juntar brazos.' },
-        { id: 'em-4', svg: 'shoulder_press', name: '4. Press Militar Manc.', muscle: 'Hombro', sets: '3 x 10–12', note: 'No choques las mancuernas arriba.' },
-        { id: 'em-5', svg: 'lateral_raise', name: '5. Elevaciones Laterales', muscle: 'Hombro Lateral', sets: '4 x 12–15', note: 'Movimiento limpio sin impulso.' },
-        { id: 'em-6', svg: 'tricep_rope', name: '6. Extensión Tríceps', muscle: 'Tríceps', sets: '3 x 12–15', note: 'Codos pegados a costados.' }
-      ],
-      espalda: [
-        { id: 'es-1', svg: 'lat_pulldown', name: '1. Jalón al Pecho Polea', muscle: 'Dorsales', sets: '4 x 10–12', note: 'Codos hacia el suelo sacando el pecho.' },
-        { id: 'es-2', svg: 'cable_row', name: '2. Remo Polea Baja (V)', muscle: 'Espalda Media', sets: '4 x 10–12', note: 'Junta escápulas 1 seg atrás.' },
-        { id: 'es-3', svg: 'db_row', name: '3. Remo Unilateral Manc.', muscle: 'Dorsal', sets: '3 x 10–12', note: 'Apoyado en banco, jala hacia la cadera.' },
-        { id: 'es-4', svg: 'face_pull', name: '4. Face Pull', muscle: 'Hombro Posterior', sets: '3 x 15', note: 'Cuerda hacia la frente.' },
-        { id: 'es-5', svg: 'bicep_curl', name: '5. Curl Bíceps Barra Z', muscle: 'Bíceps', sets: '3 x 10–12', note: 'Sin balancear la espalda.' },
-        { id: 'es-6', svg: 'bicep_curl', name: '6. Curl Martillo Manc.', muscle: 'Braquial / Antebrazo', sets: '3 x 12', note: 'Agarre neutro.' }
-      ]
-    };
-
-    let customExercises = JSON.parse(localStorage.getItem('gym_custom_exercises')) || {};
-    let currentDayId = localStorage.getItem('gym_active_tab') || 'encasa';
-
-    function renderAllTables() {
-      Object.keys(ROUTINES).forEach(dayKey => {
-        const tbody = document.getElementById('tbody-' + dayKey);
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        const list = [...ROUTINES[dayKey], ...(customExercises[dayKey] || [])];
-        list.forEach(ex => {
-          const tr = document.createElement('tr');
-          const isChecked = localStorage.getItem('gym_c_' + ex.id) === 'true';
-          if (isChecked) tr.classList.add('row-completed');
-          const delBtn = ex.isCustom ? `<button onclick="deleteCustomExercise('${dayKey}', '${ex.id}')" class="btn-sec" style="padding: 2px 7px; font-size: 11px; margin-left: 6px;">✕</button>` : '';
-          tr.innerHTML = `
-            <td>
-              <div class="ex-cell">
-                <div class="ex-svg-box">${SVGS[ex.svg] || SVGS.lat_pulldown}</div>
-                <div>
-                  <div class="ex-name">${ex.name}${delBtn}</div>
-                  <div class="ex-muscle">${ex.muscle || 'Personalizado'}</div>
-                </div>
-              </div>
-            </td>
-            <td class="ex-sets">${ex.sets || '3 x 12'}</td>
-            <td style="text-align:center;"><input type="text" inputmode="decimal" class="weight-input" data-key="${ex.id}" placeholder="0"></td>
-            <td class="ex-note">${ex.note || 'Agregado manualmente'}</td>
-            <td style="text-align:center;"><input type="checkbox" data-chk="${ex.id}"></td>
-          `;
-          tbody.appendChild(tr);
-        });
-      });
-      bindInputs();
-      updateProgress();
-    }
-
-    function updateProgress() {
-      const textEl = document.getElementById('progressText');
-      const fillEl = document.getElementById('progressFill');
-      if (currentDayId === 'catalogo') {
-        textEl.innerText = 'Catálogo (24)';
-        fillEl.style.width = '100%';
-        return;
-      }
-      const tbody = document.getElementById('tbody-' + currentDayId);
-      if (!tbody) return;
-      const chks = tbody.querySelectorAll('input[type="checkbox"]');
-      const total = chks.length;
-      const done = Array.from(chks).filter(c => c.checked).length;
-      textEl.innerText = `${done} / ${total} listos`;
-      fillEl.style.width = total > 0 ? `${Math.round((done / total) * 100)}%` : '0%';
-    }
-
-    function bindInputs() {
-      document.querySelectorAll('.weight-input').forEach(input => {
-        const key = 'gym_w_' + input.dataset.key;
-        input.value = localStorage.getItem(key) || '';
-        input.addEventListener('input', () => localStorage.setItem(key, input.value));
-      });
-      document.querySelectorAll('input[type="checkbox"][data-chk]').forEach(chk => {
-        const key = 'gym_c_' + chk.dataset.chk;
-        chk.checked = localStorage.getItem(key) === 'true';
-        chk.addEventListener('change', () => {
-          localStorage.setItem(key, chk.checked);
-          const tr = chk.closest('tr');
-          if (tr) tr.classList.toggle('row-completed', chk.checked);
-          updateProgress();
-        });
-      });
-    }
-
-    function finishWorkout() {
-      const tbody = document.getElementById('tbody-' + currentDayId);
-      if (!tbody) return;
-      const chks = tbody.querySelectorAll('input[type="checkbox"]');
-      const done = Array.from(chks).filter(c => c.checked).length;
-      if (done === 0) return alert('Marca al menos 1 ejercicio completado antes de finalizar.');
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
-      const label = DAY_LABELS[currentDayId] || currentDayId;
-      logs.unshift({ id: Date.now(), text: `✅ ${dateStr} — ${label} (${done}/${chks.length} ejercicios)` });
-      localStorage.setItem('gym_logs', JSON.stringify(logs));
-      chks.forEach(c => {
-        c.checked = false;
-        localStorage.setItem('gym_c_' + c.dataset.chk, 'false');
-        c.closest('tr')?.classList.remove('row-completed');
-      });
-      renderLogs();
-      updateProgress();
-      alert('¡Sesión guardada en tu Bitácora! Tus pesos en kg se mantuvieron guardados.');
-    }
-
-    function addCustomExercise() {
-      const name = document.getElementById('newExName').value.trim();
-      if (!name) return;
-      const muscle = document.getElementById('newExMuscle').value.trim() || 'Extra';
-      const sets = document.getElementById('newExSets').value.trim() || '3 x 12';
-      const svg = document.getElementById('newExSvg').value;
-      const note = document.getElementById('newExNote').value.trim() || 'Agregado en sesión.';
-      if (!customExercises[currentDayId]) customExercises[currentDayId] = [];
-      customExercises[currentDayId].push({ id: 'cust-' + Date.now(), svg, name: '⭐ ' + name, muscle, sets, note, isCustom: true });
-      localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercises));
-      document.getElementById('newExName').value = '';
-      document.getElementById('newExMuscle').value = '';
-      document.getElementById('newExSets').value = '';
-      document.getElementById('newExNote').value = '';
-      renderAllTables();
-    }
-
-    function deleteCustomExercise(dayKey, exId) {
-      if (!customExercises[dayKey]) return;
-      customExercises[dayKey] = customExercises[dayKey].filter(e => e.id !== exId);
-      localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercises));
-      renderAllTables();
-    }
-
+    // Tema Light / Dark
     function applyTheme(theme) {
       const btn = document.getElementById('themeToggleBtn');
       if (theme === 'light') {
@@ -836,144 +303,6 @@
       });
     }
 
-    function showDay(dayId) {
-      currentDayId = dayId;
-      document.querySelectorAll('.day-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.day-tab').forEach(el => el.classList.remove('active-tab'));
-      document.getElementById('content-' + dayId)?.classList.remove('hidden');
-      const tab = document.getElementById('tab-' + dayId);
-      if (tab) {
-        tab.classList.add('active-tab');
-        tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-      const formBox = document.getElementById('customExFormBox');
-      if (formBox) formBox.style.display = (dayId === 'catalogo' || dayId === 'comidas') ? 'none' : 'flex';
-      localStorage.setItem('gym_active_tab', dayId);
-      updateProgress();
-    }
-    if (currentDayId && document.getElementById('content-' + currentDayId)) showDay(currentDayId);
-    renderAllTables();
-
-    const CATALOG = [
-      { cat: 'Pecho', svg: 'bench_press', name: 'Press de Banca Plano', muscle: 'Pectoral Mayor', sets: '4 x 10–12', note: 'Retrae escápulas y baja controlado al centro del pecho.' },
-      { cat: 'Pecho', svg: 'bench_press', name: 'Press Inclinado Mancuernas (30°)', muscle: 'Pectoral Superior', sets: '3 x 10–12', note: 'Inclinación moderada para enfocar la parte alta del pecho.' },
-      { cat: 'Pecho', svg: 'pec_deck', name: 'Aperturas en Pec-Deck / Máquina', muscle: 'Pectoral (Aislamiento)', sets: '3 x 12–15', note: 'Junta brazos al frente sin encoger los hombros.' },
-      { cat: 'Pecho', svg: 'pec_deck', name: 'Cruces en Polea Alta (Crossover)', muscle: 'Pecho Inferior / Medio', sets: '3 x 12–15', note: 'Inclina ligeramente el torso y cruza manos abajo.' },
-      { cat: 'Espalda', svg: 'lat_pulldown', name: 'Jalón al Pecho (Agarre Ancho/Neutro)', muscle: 'Dorsal Ancho', sets: '4 x 10–12', note: 'Lleva los codos hacia abajo y saca el pecho.' },
-      { cat: 'Espalda', svg: 'cable_row', name: 'Remo en Polea Baja (Agarre V)', muscle: 'Espalda Media', sets: '4 x 10–12', note: 'Junta los omóplatos 1 segundo atrás en cada repetición.' },
-      { cat: 'Espalda', svg: 'db_row', name: 'Remo Unilateral c/ Mancuerna', muscle: 'Dorsal Unilateral', sets: '3 x 10–12', note: 'Apóyate en un banco y sube el codo hacia tu cadera.' },
-      { cat: 'Espalda', svg: 'lat_pulldown', name: 'Pullover en Polea Alta (Cuerda/Barra)', muscle: 'Dorsales y Serrato', sets: '3 x 12–15', note: 'Brazos semi-rectos, baja la barra hasta los muslos.' },
-      { cat: 'Pierna', svg: 'leg_press', name: 'Prensa de Piernas 45°', muscle: 'Cuádriceps y Glúteo', sets: '4 x 10–12', note: 'Pies medios para cuádriceps; pies altos para glúteo/femoral.' },
-      { cat: 'Pierna', svg: 'goblet_squat', name: 'Sentadilla Goblet c/ Mancuerna', muscle: 'Pierna General y Core', sets: '3 x 10–12', note: 'Mancuerna pegada al pecho y espalda bien recta.' },
-      { cat: 'Pierna', svg: 'leg_ext', name: 'Extensión de Cuádriceps en Máquina', muscle: 'Cuádriceps Aislados', sets: '3 x 12–15', note: 'Aguanta 1 segundo arriba contrayendo fuerte.' },
-      { cat: 'Pierna', svg: 'rdl', name: 'Peso Muerto Rumano c/ Mancuernas', muscle: 'Isquiotibiales y Glúteo', sets: '4 x 10–12', note: 'Rodillas semi-fijas, empuja la cadera hacia atrás.' },
-      { cat: 'Pierna', svg: 'leg_curl', name: 'Curl Femoral (Acostado o Sentado)', muscle: 'Isquiotibiales', sets: '4 x 10–12', note: 'No despegues la cadera; baja en 2 segundos.' },
-      { cat: 'Pierna', svg: 'lunges', name: 'Zancadas / Desplantes c/ Mancuernas', muscle: 'Pierna Global & Glúteo', sets: '3 x 10 c/ lado', note: 'Paso largo y controlado, rodilla trasera casi toca el suelo.' },
-      { cat: 'Pierna', svg: 'leg_press', name: 'Hip Thrust / Puente de Glúteo', muscle: 'Glúteo Mayor', sets: '3 x 10–12', note: 'Aprieta los glúteos 1 segundo arriba con mirada al frente.' },
-      { cat: 'Pierna', svg: 'calf_raise', name: 'Elevación de Talones (Gemelos)', muscle: 'Pantorrilla', sets: '4 x 15', note: 'Rango completo arriba y abajo, sin rebotar.' },
-      { cat: 'Hombro', svg: 'shoulder_press', name: 'Press Militar c/ Mancuernas', muscle: 'Deltoides Anterior / Medio', sets: '3 x 10–12', note: 'Baja a la altura de las orejas y sube controlado.' },
-      { cat: 'Hombro', svg: 'lateral_raise', name: 'Elevaciones Laterales (Manc. o Polea)', muscle: 'Deltoides Lateral', sets: '4 x 12–15', note: 'Sube hasta la altura de los hombros sin encoger el cuello.' },
-      { cat: 'Hombro', svg: 'face_pull', name: 'Face Pull en Polea Alta', muscle: 'Hombro Posterior / Manguito', sets: '3 x 15', note: 'Jala la cuerda hacia tu frente separando las manos.' },
-      { cat: 'Brazos', svg: 'bicep_curl', name: 'Curl de Bíceps Barra Z o Mancuernas', muscle: 'Bíceps Braquial', sets: '3 x 10–12', note: 'Codos pegados al cuerpo sin balancear la espalda.' },
-      { cat: 'Brazos', svg: 'bicep_curl', name: 'Curl Martillo con Mancuernas', muscle: 'Braquial y Antebrazo', sets: '3 x 12', note: 'Palmas viéndose entre sí (agarre neutro).' },
-      { cat: 'Brazos', svg: 'tricep_rope', name: 'Extensión de Tríceps en Polea (Cuerda)', muscle: 'Tríceps', sets: '3 x 12–15', note: 'Abre la cuerda abajo manteniendo los codos fijos.' },
-      { cat: 'Brazos', svg: 'tricep_rope', name: 'Press Francés c/ Mancuernas o Barra Z', muscle: 'Tríceps (Cabeza Larga)', sets: '3 x 10–12', note: 'Baja controlado detrás de la frente/cabeza.' },
-      { cat: 'Core', svg: 'plank', name: 'Plancha Abdominal / Elevación Piernas', muscle: 'Core y Abdomen', sets: '3 x 35–45s', note: 'Aprieta abdomen y glúteos manteniendo postura neutra.' }
-    ];
-
-    let activeCatFilter = 'Todos';
-    function setCatFilter(cat, btn) {
-      activeCatFilter = cat;
-      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active-chip'));
-      if (btn) btn.classList.add('active-chip');
-      renderCatalog();
-    }
-
-    function renderCatalog() {
-      const grid = document.getElementById('catalogGrid');
-      if (!grid) return;
-      const query = (document.getElementById('catalogSearch')?.value || '').toLowerCase();
-      grid.innerHTML = '';
-      CATALOG.forEach((item, idx) => {
-        const matchCat = activeCatFilter === 'Todos' || item.cat === activeCatFilter;
-        const matchSearch = !query || item.name.toLowerCase().includes(query) || item.muscle.toLowerCase().includes(query) || item.cat.toLowerCase().includes(query);
-        if (!matchCat || !matchSearch) return;
-        const card = document.createElement('div');
-        card.className = 'catalog-card';
-        card.innerHTML = `
-          <div class="catalog-top">
-            <div class="ex-svg-box">${SVGS[item.svg] || ''}</div>
-            <div>
-              <div class="badge badge-sky" style="display:inline-block; margin-bottom:4px;">${item.cat} • ${item.sets}</div>
-              <div class="ex-name">${item.name}</div>
-              <div class="ex-muscle">${item.muscle}</div>
-            </div>
-          </div>
-          <p class="ex-note">${item.note}</p>
-          <button onclick="addFromCatalog(${idx}, this)" class="btn-primary" style="width:100%; text-align:center;">+ Agregar al día</button>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function addFromCatalog(idx, btn) {
-      const item = CATALOG[idx];
-      const targetDay = document.getElementById('catalogTargetDay').value;
-      if (!customExercises[targetDay]) customExercises[targetDay] = [];
-      customExercises[targetDay].push({ id: 'cat-' + Date.now() + '-' + idx, svg: item.svg, name: '⭐ ' + item.name, muscle: item.muscle, sets: item.sets, note: item.note, isCustom: true });
-      localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercises));
-      renderAllTables();
-      const orig = btn.innerText;
-      btn.innerText = '✓ Agregado';
-      btn.style.background = 'var(--emerald)';
-      setTimeout(() => { btn.innerText = orig; btn.style.background = 'var(--sky)'; }, 1200);
-    }
-    renderCatalog();
-
-    const defaultLogs = [
-      { id: 105, text: '✅ Sáb 21 Nov — En Casa: Goblet 25kg, RDL 15kg, Puente 25kg, Cuerda 6m' },
-      { id: 104, text: '✅ Jue 12 Nov — Hombro, Brazos y Jalón' },
-      { id: 102, text: '✅ Mié 11 Nov — Pecho y Espalda (Remo)' },
-      { id: 101, text: '✅ Mar 10 Nov — Pierna general' }
-    ];
-    let logs = JSON.parse(localStorage.getItem('gym_logs'));
-    if (!logs || logs.length === 0) {
-      logs = [...defaultLogs];
-      localStorage.setItem('gym_logs', JSON.stringify(logs));
-    }
-
-    function renderLogs() {
-      const list = document.getElementById('logList');
-      list.innerHTML = '';
-      logs.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'log-item';
-        div.innerHTML = `<span>${item.text}</span><button onclick="deleteLog(${item.id})" class="btn-sec" style="padding: 4px 8px; font-size: 11px;">✕</button>`;
-        list.appendChild(div);
-      });
-    }
-    function addLog() {
-      const input = document.getElementById('logText');
-      const val = input.value.trim();
-      if (!val) return;
-      logs.unshift({ id: Date.now(), text: '✅ ' + val });
-      localStorage.setItem('gym_logs', JSON.stringify(logs));
-      input.value = '';
-      renderLogs();
-    }
-    function deleteLog(id) {
-      logs = logs.filter(l => l.id !== id);
-      localStorage.setItem('gym_logs', JSON.stringify(logs));
-      renderLogs();
-    }
-    function restoreDefaultLogs() {
-      const existingIds = new Set(logs.map(l => l.id));
-      defaultLogs.forEach(dl => { if (!existingIds.has(dl.id)) logs.push(dl); });
-      localStorage.setItem('gym_logs', JSON.stringify(logs));
-      renderLogs();
-    }
-    renderLogs();
-
     // Registro de Comidas Offline
     const defaultMeals = [
       { id: 201, text: '🍳 Desayuno (Dom 22 Nov): 2 huevos tibios + 1 yogur de mango' }
@@ -986,7 +315,6 @@
 
     function renderMeals() {
       const list = document.getElementById('mealList');
-      if (!list) return;
       list.innerHTML = '';
       meals.forEach(item => {
         const div = document.createElement('div');
@@ -1019,92 +347,14 @@
     // Puente Markdown para ChatGPT / ENTRENAMIENTO.md
     function exportForChatGPT() {
       const now = new Date().toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      let md = `## Resumen Mi GYM (${now})\n\n### Entrenamientos recientes:\n`;
-      logs.slice(0, 5).forEach(l => { md += `- ${l.text}\n`; });
-      md += `\n### Comidas registradas:\n`;
-      meals.slice(0, 6).forEach(m => { md += `- ${m.text}\n`; });
+      let md = `## Registro de Comidas (${now})\n`;
+      meals.slice(0, 10).forEach(m => { md += `- ${m.text}\n`; });
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(md).then(() => {
-          alert('¡Copiado! Pégalo directo en ChatGPT o en ENTRENAMIENTO.md');
+          alert('¡Comidas copiadas! Pégalo en ChatGPT o en ENTRENAMIENTO.md');
         }).catch(() => prompt('Copia este resumen:', md));
       } else {
         prompt('Copia este resumen:', md);
-      }
-    }
-
-    // Audio Chime para iOS Safari (ya que iOS no soporta vibrate)
-    let audioCtx = null;
-    function playChime() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const playTone = (freq, start, dur) => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, start);
-          gain.gain.setValueAtTime(0.25, start);
-          gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(start);
-          osc.stop(start + dur);
-        };
-        const now = audioCtx.currentTime;
-        playTone(880, now, 0.18);
-        playTone(1174.66, now + 0.2, 0.35);
-      } catch (e) {}
-    }
-
-    let timerDuration = 60;
-    let timerRemaining = 60;
-    let timerInterval = null;
-    let isRunning = false;
-
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60).toString().padStart(2, '0');
-      const s = (sec % 60).toString().padStart(2, '0');
-      return `${m}:${s}`;
-    }
-
-    function setTimer(sec) {
-      clearInterval(timerInterval);
-      isRunning = false;
-      timerDuration = sec;
-      timerRemaining = sec;
-      const disp = document.getElementById('timerDisplay');
-      disp.innerText = formatTime(sec);
-      disp.style.color = 'var(--sky)';
-      document.getElementById('startTimerBtn').innerText = '▶';
-    }
-
-    function toggleTimer() {
-      if (!audioCtx) {
-        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
-      }
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-      const btn = document.getElementById('startTimerBtn');
-      const disp = document.getElementById('timerDisplay');
-      if (isRunning) {
-        clearInterval(timerInterval);
-        isRunning = false;
-        btn.innerText = '▶';
-      } else {
-        if (timerRemaining <= 0) timerRemaining = timerDuration;
-        isRunning = true;
-        btn.innerText = '⏸';
-        disp.style.color = 'var(--emerald)';
-        timerInterval = setInterval(() => {
-          timerRemaining--;
-          disp.innerText = formatTime(timerRemaining);
-          if (timerRemaining <= 0) {
-            clearInterval(timerInterval);
-            isRunning = false;
-            disp.innerText = '¡LISTO!';
-            disp.style.color = 'var(--rose)';
-            btn.innerText = '↺';
-            playChime();
-          }
-        }, 1000);
       }
     }
   </script>
