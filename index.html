@@ -344,6 +344,7 @@
       <button onclick="showDay('piernaa')" id="tab-piernaa" class="day-tab">🦵 Martes: Pierna (Lau)</button>
       <button onclick="showDay('empuje')" id="tab-empuje" class="day-tab">🛡️ Mié: Pecho & Espalda</button>
       <button onclick="showDay('hoy')" id="tab-hoy" class="day-tab">🔥 Jue: Hombro & Brazos</button>
+      <button onclick="showDay('comidas')" id="tab-comidas" class="day-tab">🍽️ Comidas</button>
       <button onclick="showDay('catalogo')" id="tab-catalogo" class="day-tab">📚 Catálogo (24)</button>
     </div>
 
@@ -483,6 +484,23 @@
         </div>
       </div>
 
+      <!-- COMIDAS -->
+      <div id="content-comidas" class="day-content hidden">
+        <div class="section-title" style="margin-bottom: 4px;"><span>🍽️</span> Registro de Comidas (Offline)</div>
+        <p class="subtitle" style="margin-bottom: 12px;">Meta: 84 kg → 80 kg conservando músculo. Registra tus comidas y compártelas con ChatGPT.</p>
+        <div class="log-form">
+          <select id="mealType" class="log-input" style="max-width: 150px;">
+            <option value="🍳 Desayuno">🍳 Desayuno</option>
+            <option value="🍗 Comida">🍗 Comida</option>
+            <option value="🥗 Cena">🥗 Cena</option>
+            <option value="🍎 Snack">🍎 Snack</option>
+          </select>
+          <input type="text" id="mealText" class="log-input" placeholder="Ej: 2 huevos tibios, 1 yogur de mango...">
+          <button onclick="addMeal()" class="btn-primary">+ Registrar</button>
+        </div>
+        <div id="mealList" class="log-list"></div>
+      </div>
+
       <!-- CATÁLOGO DE EJERCICIOS -->
       <div id="content-catalogo" class="day-content hidden">
         <div class="section-title" style="margin-bottom: 4px;"><span>📚</span> Catálogo de Ejercicios</div>
@@ -538,8 +556,11 @@
     <!-- Bitácora Personal -->
     <section class="card">
       <div class="log-header">
-        <div class="section-title" style="margin-bottom:0;"><span>📝</span> Bitácora</div>
-        <button onclick="restoreDefaultLogs()" class="btn-sec" style="font-size:12px;">↺ Restaurar Semana 1</button>
+        <div class="section-title" style="margin-bottom:0;"><span>📝</span> Bitácora & Puente ChatGPT</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button onclick="exportForChatGPT()" class="btn-primary" style="font-size:12px; padding:6px 10px;">📋 Copiar para ChatGPT</button>
+          <button onclick="restoreDefaultLogs()" class="btn-sec" style="font-size:12px;">↺ Restaurar Semana</button>
+        </div>
       </div>
       <div class="log-form">
         <input type="text" id="logText" class="log-input" placeholder="Nota rápida de entrenamiento...">
@@ -629,10 +650,12 @@
         { id: 'ec-7', svg: 'plank', name: '7. Plancha + Bird Dog + Cuerda', muscle: 'Core & Cardio', sets: '32-35s | 2×10 | 6m', note: 'Plancha 32s, 34s, 35s • Bird dog 2×10 • Cuerda 6 minutos.' }
       ],
       lunes: [
-        { id: 'lu-1', svg: 'plank', name: '1. Caminadora / Bici / Cuerda', muscle: 'Cardio Zona 2', sets: '20–30 min', note: 'Ritmo conversacional constante para quemar grasa sin fatigar piernas.' },
-        { id: 'lu-2', svg: 'dead_bug', name: '2. Dead Bug', muscle: 'Core Profundo', sets: '3 x 10–12', note: 'Espalda baja pegada al piso.' },
-        { id: 'lu-3', svg: 'plank', name: '3. Plancha Abdominal', muscle: 'Core', sets: '3 x 35–45s', note: 'Aprieta glúteos y abdomen.' },
-        { id: 'lu-4', svg: 'plank', name: '4. Bird Dog', muscle: 'Estabilidad Lumbar', sets: '2–3 x 10 c/ lado', note: 'Extiende brazo y pierna contraria sin arquear espalda.' }
+        { id: 'lu-1', svg: 'plank', name: '1. Cuerda / Caminadora', muscle: 'Cardio Moderado', sets: '8–10 min (o 20m GYM)', note: 'En casa: 8–10 min cuerda. En GYM: 20 min cardio suave para llegar bien al martes.' },
+        { id: 'lu-2', svg: 'lunges', name: '2. Burpees (Alt. en casa)', muscle: 'Acondicionamiento', sets: '2 x 8 reps', note: 'Descansa 2 min y NO llegues al fallo.' },
+        { id: 'lu-3', svg: 'dead_bug', name: '3. Dead Bug', muscle: 'Core Profundo', sets: '3 x 10 c/ lado', note: 'Espalda baja pegada al piso.' },
+        { id: 'lu-4', svg: 'plank', name: '4. Bird Dog', muscle: 'Estabilidad Lumbar', sets: '3 x 10 c/ lado', note: 'Extiende brazo y pierna contraria sin arquear espalda.' },
+        { id: 'lu-5', svg: 'plank', name: '5. Plancha Abdominal', muscle: 'Core', sets: '3 x 35 seg', note: 'Aprieta glúteos y abdomen.' },
+        { id: 'lu-6', svg: 'dead_bug', name: '6. Crunch Invertido', muscle: 'Abdomen Inferior', sets: '3 x 12', note: 'Lleva rodillas al pecho controlando el descenso.' }
       ],
       hoy: [
         { id: 'hoy-1', svg: 'lat_pulldown', name: '1. Jalón al Pecho en Polea', muscle: 'Dorsal Ancho', sets: '4 x 10–12', note: 'Agarre neutro o abierto, jala llevando los codos hacia las costillas.' },
@@ -824,7 +847,7 @@
         tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       }
       const formBox = document.getElementById('customExFormBox');
-      if (formBox) formBox.style.display = (dayId === 'catalogo') ? 'none' : 'flex';
+      if (formBox) formBox.style.display = (dayId === 'catalogo' || dayId === 'comidas') ? 'none' : 'flex';
       localStorage.setItem('gym_active_tab', dayId);
       updateProgress();
     }
@@ -950,6 +973,64 @@
       renderLogs();
     }
     renderLogs();
+
+    // Registro de Comidas Offline
+    const defaultMeals = [
+      { id: 201, text: '🍳 Desayuno (Dom 22 Nov): 2 huevos tibios + 1 yogur de mango' }
+    ];
+    let meals = JSON.parse(localStorage.getItem('gym_meals'));
+    if (!meals || meals.length === 0) {
+      meals = [...defaultMeals];
+      localStorage.setItem('gym_meals', JSON.stringify(meals));
+    }
+
+    function renderMeals() {
+      const list = document.getElementById('mealList');
+      if (!list) return;
+      list.innerHTML = '';
+      meals.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'log-item';
+        div.innerHTML = `<span>${item.text}</span><button onclick="deleteMeal(${item.id})" class="btn-sec" style="padding: 4px 8px; font-size: 11px;">✕</button>`;
+        list.appendChild(div);
+      });
+    }
+
+    function addMeal() {
+      const type = document.getElementById('mealType').value;
+      const input = document.getElementById('mealText');
+      const val = input.value.trim();
+      if (!val) return;
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
+      meals.unshift({ id: Date.now(), text: `${type} (${dateStr}): ${val}` });
+      localStorage.setItem('gym_meals', JSON.stringify(meals));
+      input.value = '';
+      renderMeals();
+    }
+
+    function deleteMeal(id) {
+      meals = meals.filter(m => m.id !== id);
+      localStorage.setItem('gym_meals', JSON.stringify(meals));
+      renderMeals();
+    }
+    renderMeals();
+
+    // Puente Markdown para ChatGPT / ENTRENAMIENTO.md
+    function exportForChatGPT() {
+      const now = new Date().toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      let md = `## Resumen Mi GYM (${now})\n\n### Entrenamientos recientes:\n`;
+      logs.slice(0, 5).forEach(l => { md += `- ${l.text}\n`; });
+      md += `\n### Comidas registradas:\n`;
+      meals.slice(0, 6).forEach(m => { md += `- ${m.text}\n`; });
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(md).then(() => {
+          alert('¡Copiado! Pégalo directo en ChatGPT o en ENTRENAMIENTO.md');
+        }).catch(() => prompt('Copia este resumen:', md));
+      } else {
+        prompt('Copia este resumen:', md);
+      }
+    }
 
     // Audio Chime para iOS Safari (ya que iOS no soporta vibrate)
     let audioCtx = null;
