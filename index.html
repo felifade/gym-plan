@@ -179,6 +179,11 @@
         <div class="section-title" style="margin-bottom:0;"><span>🍽️</span> Registro de Comidas</div>
         <span style="font-size:11px; color:var(--muted);">Guardado automático en dispositivo</span>
       </div>
+      <div class="kpi-grid" style="margin-bottom:12px;">
+        <div class="kpi-box"><div class="kpi-val" id="mealCalories">0</div><div class="kpi-lbl">kcal registradas hoy</div></div>
+        <div class="kpi-box"><div class="kpi-val" id="mealCount">0</div><div class="kpi-lbl">comidas</div></div>
+        <div class="kpi-box"><div class="kpi-val">2,050</div><div class="kpi-lbl">meta provisional</div></div>
+      </div>
       <div class="log-form">
         <select id="mealType" class="log-input" style="max-width: 155px;">
           <option value="🍳 Desayuno">🍳 Desayuno</option>
@@ -186,8 +191,14 @@
           <option value="🥗 Cena">🥗 Cena</option>
           <option value="🍎 Snack">🍎 Snack</option>
         </select>
-        <input type="text" id="mealText" class="log-input" placeholder="Ej: 2 huevos tibios, yogur de mango...">
+        <input type="text" id="mealText" class="log-input" placeholder="Nombre o descripción de la comida">
+        <input type="number" id="mealKcal" class="log-input" style="max-width:110px;" placeholder="kcal">
         <button onclick="addMeal()" class="btn-primary">+ Registrar</button>
+      </div>
+      <div class="log-form">
+        <select id="mealTemplate" class="log-input"><option value="">Repetir una comida guardada…</option></select>
+        <button onclick="repeatMeal()" class="btn-sec">↻ Repetir</button>
+        <button onclick="saveMealTemplate()" class="btn-sec">☆ Guardar actual como plantilla</button>
       </div>
       <div id="mealList" class="log-list"></div>
     </section>
@@ -304,42 +315,60 @@
     }
 
     // Registro de Comidas Offline
+    const todayKey = new Date().toISOString().slice(0,10);
     const defaultMeals = [
-      { id: 201, text: '🍳 Desayuno (Dom 22 Nov): 2 huevos tibios + 1 yogur de mango' }
+      { id: 201, date: '2026-11-22', type: '🍳 Desayuno', name: '2 huevos tibios + 1 yogur de mango', kcal: 250 },
+      { id: 202, date: '2026-11-23', type: '🥪 Comida', name: '2 sándwiches calientes: pan integral, pollo, manchego, jamón, mayonesa y mostaza', kcal: 800 },
+      { id: 203, date: '2026-11-23', type: '🍗 Comida', name: 'Sopa de lentejas + pollo almendrado + frijoles + agua de fruta', kcal: 900 },
+      { id: 204, date: '2026-11-23', type: '🥗 Comida', name: 'Nopales + sopa de verduras (pendiente)', kcal: 0, pending: true }
     ];
-    let meals = JSON.parse(localStorage.getItem('gym_meals'));
-    if (!meals || meals.length === 0) {
-      meals = [...defaultMeals];
-      localStorage.setItem('gym_meals', JSON.stringify(meals));
+    let meals = JSON.parse(localStorage.getItem('gym_meals')) || defaultMeals;
+    meals = meals.map(m => ({...m, date: m.date || todayKey, name: m.name || m.text || '', kcal: Number(m.kcal || 0)}));
+    let mealTemplates = JSON.parse(localStorage.getItem('gym_meal_templates')) || [];
+    function saveMeals() { localStorage.setItem('gym_meals', JSON.stringify(meals)); }
+    function renderMealTemplates() {
+      const select = document.getElementById('mealTemplate');
+      select.innerHTML = '<option value="">Repetir una comida guardada…</option>' + mealTemplates.map((m,i) => `<option value="${i}">${m.name} — ${m.kcal} kcal</option>`).join('');
     }
-
     function renderMeals() {
       const list = document.getElementById('mealList');
+      const todayMeals = meals.filter(m => m.date === todayKey);
+      document.getElementById('mealCalories').innerText = todayMeals.reduce((sum,m) => sum + (m.pending ? 0 : Number(m.kcal || 0)), 0).toLocaleString('es-MX');
+      document.getElementById('mealCount').innerText = todayMeals.length;
       list.innerHTML = '';
-      meals.forEach(item => {
+      todayMeals.forEach(item => {
         const div = document.createElement('div');
         div.className = 'log-item';
-        div.innerHTML = `<span>${item.text}</span><button onclick="deleteMeal(${item.id})" class="btn-sec" style="padding: 4px 8px; font-size: 11px;">✕</button>`;
+        div.innerHTML = `<span>${item.type} <strong>${item.name}</strong> — ${item.pending ? 'pendiente' : item.kcal + ' kcal'}</span><button onclick="deleteMeal(${item.id})" class="btn-sec" style="padding: 4px 8px; font-size: 11px;">✕</button>`;
         list.appendChild(div);
       });
+      renderMealTemplates();
+      saveMeals();
     }
-
     function addMeal() {
-      const type = document.getElementById('mealType').value;
-      const input = document.getElementById('mealText');
-      const val = input.value.trim();
-      if (!val) return;
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
-      meals.unshift({ id: Date.now(), text: `${type} (${dateStr}): ${val}` });
-      localStorage.setItem('gym_meals', JSON.stringify(meals));
-      input.value = '';
+      const name = document.getElementById('mealText').value.trim();
+      if (!name) return;
+      meals.unshift({ id: Date.now(), date: todayKey, type: document.getElementById('mealType').value, name, kcal: Number(document.getElementById('mealKcal').value || 0) });
+      document.getElementById('mealText').value = '';
+      document.getElementById('mealKcal').value = '';
       renderMeals();
     }
-
+    function saveMealTemplate() {
+      const name = document.getElementById('mealText').value.trim();
+      if (!name) return;
+      mealTemplates.push({ name, kcal: Number(document.getElementById('mealKcal').value || 0), type: document.getElementById('mealType').value });
+      localStorage.setItem('gym_meal_templates', JSON.stringify(mealTemplates));
+      renderMealTemplates();
+      alert('Comida guardada como plantilla para repetirla.');
+    }
+    function repeatMeal() {
+      const item = mealTemplates[Number(document.getElementById('mealTemplate').value)];
+      if (!item) return;
+      meals.unshift({ id: Date.now(), date: todayKey, type: item.type, name: item.name, kcal: item.kcal });
+      renderMeals();
+    }
     function deleteMeal(id) {
       meals = meals.filter(m => m.id !== id);
-      localStorage.setItem('gym_meals', JSON.stringify(meals));
       renderMeals();
     }
     renderMeals();
